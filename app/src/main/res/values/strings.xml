@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">ChessAndroid</string>
+    <string name="title_activity_chess">ChessActivity</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+</resources>
