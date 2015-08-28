@@ -32,14 +32,10 @@ public class ChessBoardView extends SurfaceView implements View {
             }
 
             @Override
-            public void surfaceChanged(SurfaceHolder surfaceHolder, int i, int i2, int i3) {
-
-            }
+            public void surfaceChanged(SurfaceHolder surfaceHolder, int i, int i2, int i3) {}
 
             @Override
-            public void surfaceDestroyed(SurfaceHolder surfaceHolder) {
-
-            }
+            public void surfaceDestroyed(SurfaceHolder surfaceHolder) {}
         });
 
 //        BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher);
@@ -50,6 +46,8 @@ public class ChessBoardView extends SurfaceView implements View {
         float tileSize = (float) (getWidth() / 8.0); // TODO: more casts ?, canvas.getWidth() ?
 
         canvas.drawColor(Color.BLACK);
+
+        // TODO: probably need to encapsulate the tiles to know which tile is touched... would be useful for readMove()
 
         // Draw the tiles
         for (int i = 0; i < 8; i++) { // horizontal
