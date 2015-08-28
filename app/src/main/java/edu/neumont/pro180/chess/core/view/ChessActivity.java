@@ -1,6 +1,8 @@
 package edu.neumont.pro180.chess.core.view;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.SurfaceHolder;
 
@@ -26,8 +28,38 @@ public class ChessActivity extends Activity implements View, SurfaceHolder.Callb
 
     @Override
     public Piece.Type getPawnPromotion() {
-        // TODO: some dialog
-        return null;
+        final String[] choices = new String[] {
+                "Queen",
+                "Knight",
+                "Rook",
+                "Bishop"
+        };
+        final String[] choice = new String[1];
+
+        new AlertDialog.Builder(this)
+                .setCancelable(false)
+                .setTitle(R.string.pawn_promotion)
+                .setItems(choices, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        choice[0] = choices[which];
+                    }
+                })
+                .create()
+                .show();
+
+        switch (choice[0]) {
+            case "Queen":
+                return Piece.Type.QUEEN;
+            case "Knight":
+                return Piece.Type.KNIGHT;
+            case "Rook":
+                return Piece.Type.ROOK;
+            case "Bishop":
+                return Piece.Type.BISHOP;
+            default:
+                return null;
+        }
     }
 
     @Override
