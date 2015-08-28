@@ -5,6 +5,7 @@
     tools:context="edu.neumont.pro180.chess.core.view.ChessActivity">
 
     <edu.neumont.pro180.chess.core.view.ChessBoardView
+        android:id="@+id/chess_board_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
