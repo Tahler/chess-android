@@ -17,6 +17,9 @@ import edu.neumont.pro180.chess.core.model.Move;
 import edu.neumont.pro180.chess.core.model.Piece;
 
 public class ChessBoardView extends SurfaceView implements View {
+    TileProperty[][] tiles;
+        // setColor - changes the background color
+        // setPiece - adds a bitmap piece on top
     private SurfaceHolder holder;
 
     public ChessBoardView(Context context, AttributeSet attrs) {
@@ -105,4 +108,7 @@ public class ChessBoardView extends SurfaceView implements View {
                 return null;
         }
     }
+
+    // void highlightMoves(List<Move> moves)
+    // void displayBoard(Piece[][] board)
 }
