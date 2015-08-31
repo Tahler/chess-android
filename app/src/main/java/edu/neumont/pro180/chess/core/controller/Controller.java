@@ -1,5 +1,9 @@
 package edu.neumont.pro180.chess.core.controller;
 
+import android.util.Log;
+
+import java.util.List;
+
 import edu.neumont.pro180.chess.core.model.Board;
 import edu.neumont.pro180.chess.core.model.Color;
 import edu.neumont.pro180.chess.core.model.Move;
@@ -59,6 +63,13 @@ public class Controller implements View.Listener {
 
     @Override
     public void tileSelected(Tile tile) {
-        view.highlightMoves(validator.getAllValidMoves(tile));
+        if (tile != null) {
+            Log.d("TileSelected", tile.x + ", " + tile.y);
+            List<Move> validMovesAtTile = validator.getAllValidMoves(tile);
+            for (Move m : validMovesAtTile) {
+                Log.d("Move", m.toString());
+            }
+            view.highlightMoves(validMovesAtTile);
+        }
     }
 }

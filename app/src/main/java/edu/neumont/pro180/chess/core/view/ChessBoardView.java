@@ -41,6 +41,7 @@ public class ChessBoardView extends SurfaceView implements View, android.view.Vi
             @Override
             public void surfaceDestroyed(SurfaceHolder surfaceHolder) {}
         });
+        this.setOnTouchListener(this);
 //        BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher);
     }
 
@@ -123,17 +124,14 @@ public class ChessBoardView extends SurfaceView implements View, android.view.Vi
         this.listener = listener;
     }
 
-
     private Tile from;
     private Tile to;
     @Override
     public boolean onTouch(android.view.View v, MotionEvent event) {
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
-            Log.d("Touched", "");
-
             if (from == null) { // First touch (selecting the piece to move)
                 from = getTileAt(event.getX(), event.getY());
-                if (listener != null) listener.tileSelected(new Tile(0, 0));
+                if (listener != null) listener.tileSelected(from);
             } else { // Second touch (selecting the destination)
                 to = getTileAt(event.getX(), event.getY());
                 // TODO: Send the move to the controller ( new Move(from, to) )
@@ -147,11 +145,16 @@ public class ChessBoardView extends SurfaceView implements View, android.view.Vi
     }
 
     private Tile getTileAt(float x, float y) {
-        float tileX = x / tileSize;
-        float tileY = y / tileSize;
+        int tileX = (int) (x / tileSize);
+        int tileY = (int) (y / tileSize);
 
-        Log.d("X, Y", x + ", " + y);
+        Log.d("TileTouched", tileX + ", " + tileY);
 
-        return null;
+        try {
+            return new Tile(tileX, tileY);
+        } catch (IndexOutOfBoundsException e) {
+            Log.e("", "Touched outside chess board");
+            return null;
+        }
     }
 }
