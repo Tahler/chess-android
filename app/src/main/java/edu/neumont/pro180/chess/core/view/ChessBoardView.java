@@ -7,6 +7,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -21,6 +22,7 @@ import edu.neumont.pro180.chess.core.model.Tile;
 public class ChessBoardView extends SurfaceView implements View, android.view.View.OnTouchListener {
     private View.Listener listener;
     private SurfaceHolder holder;
+    private static float tileSize;
 
     public ChessBoardView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -39,17 +41,15 @@ public class ChessBoardView extends SurfaceView implements View, android.view.Vi
             @Override
             public void surfaceDestroyed(SurfaceHolder surfaceHolder) {}
         });
-
 //        BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher);
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
-        float tileSize = (float) (getWidth() / 8.0); // TODO: more casts ?, canvas.getWidth() ?
-
         canvas.drawColor(Color.BLACK);
 
-        // TODO: probably need to encapsulate the tiles to know which tile is touched... would be useful for readMove()
+        tileSize = (float) (getWidth() / 8.0);
+        Log.d("TILE_SIZE", String.valueOf(tileSize));
 
         // Draw the tiles
         Paint paint = new Paint();
@@ -123,9 +123,35 @@ public class ChessBoardView extends SurfaceView implements View, android.view.Vi
         this.listener = listener;
     }
 
+
+    private Tile from;
+    private Tile to;
     @Override
     public boolean onTouch(android.view.View v, MotionEvent event) {
-        if (listener != null) listener.tileSelected(new Tile(0, 0));
+        if (event.getAction() == MotionEvent.ACTION_DOWN) {
+            Log.d("Touched", "");
+
+            if (from == null) { // First touch (selecting the piece to move)
+                from = getTileAt(event.getX(), event.getY());
+                if (listener != null) listener.tileSelected(new Tile(0, 0));
+            } else { // Second touch (selecting the destination)
+                to = getTileAt(event.getX(), event.getY());
+                // TODO: Send the move to the controller ( new Move(from, to) )
+            }
+
+            // Return true because the touch has been handled
+            return true;
+        }
+
         return false;
+    }
+
+    private Tile getTileAt(float x, float y) {
+        float tileX = x / tileSize;
+        float tileY = y / tileSize;
+
+        Log.d("X, Y", x + ", " + y);
+
+        return null;
     }
 }
