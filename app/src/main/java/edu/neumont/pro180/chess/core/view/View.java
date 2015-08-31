@@ -8,4 +8,5 @@ import edu.neumont.pro180.chess.core.model.Piece;
 public interface View {
     Move readMove() throws ParseException;
     Piece.Type getPawnPromotion();
+
 }

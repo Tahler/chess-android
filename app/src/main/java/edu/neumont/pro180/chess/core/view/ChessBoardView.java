@@ -50,9 +50,9 @@ public class ChessBoardView extends SurfaceView implements View {
         // TODO: probably need to encapsulate the tiles to know which tile is touched... would be useful for readMove()
 
         // Draw the tiles
+        Paint paint = new Paint();
         for (int i = 0; i < 8; i++) { // horizontal
             for (int j = 0; j < 8; j++) { // vertical
-                Paint paint = new Paint();
                 paint.setColor(((i + j) % 2 == 0) ? Color.WHITE : Color.GRAY);
                 canvas.drawRect(
                         i * tileSize,
