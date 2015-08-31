@@ -16,7 +16,7 @@ public class ChessActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chess);
 
-//        Engine controller = new Engine((View) findViewById(R.id.chess_board_view));
+//        Controller controller = new Controller((View) findViewById(R.id.chess_board_view));
 //        controller.play();
     }
 }
