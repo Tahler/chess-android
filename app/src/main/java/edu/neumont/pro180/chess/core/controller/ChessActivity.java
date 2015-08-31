@@ -6,9 +6,7 @@ import android.os.Bundle;
 import edu.neumont.pro180.chess.R;
 
 /**
- * The controller.
- * Instructs the interface to interact with the user and retrieve moves.
- * Validates moves before executing them on the board.
+ * Simply wraps the Controller in an activity, so that it may run on Android.
  */
 public class ChessActivity extends Activity {
     @Override

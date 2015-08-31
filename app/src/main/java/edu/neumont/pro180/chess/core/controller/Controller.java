@@ -1,7 +1,5 @@
 package edu.neumont.pro180.chess.core.controller;
 
-import java.text.ParseException;
-
 import edu.neumont.pro180.chess.core.model.Board;
 import edu.neumont.pro180.chess.core.model.Color;
 import edu.neumont.pro180.chess.core.model.Move;
@@ -11,7 +9,7 @@ import edu.neumont.pro180.chess.exception.IllegalMoveException;
 
 /**
  * The controller.
- * Instructs the interface to interact with the user and retrieve moves.
+ * Instructs the view interface to interact with the user and retrieve moves.
  * Validates moves before executing them on the board.
  */
 public class Controller {
@@ -47,10 +45,8 @@ public class Controller {
                 if (piecePromotion) mover.setType(view.getPawnPromotion());
 
                 // Check checking
-//                if (validator.isInCheck() && !validator.isOver());
+                if (validator.isInCheck() && !validator.isOver()) view.notifyIsInCheck();
             } catch (IllegalMoveException e) {
-//                view.print(e.getMessage());
-            } catch (ParseException e) {
 //                view.print(e.getMessage());
             }
         } while (!validator.isOver());

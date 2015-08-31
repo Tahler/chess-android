@@ -10,7 +10,7 @@ import android.util.AttributeSet;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
-import java.text.ParseException;
+import java.util.List;
 
 import edu.neumont.pro180.chess.R;
 import edu.neumont.pro180.chess.core.model.Move;
@@ -66,7 +66,17 @@ public class ChessBoardView extends SurfaceView implements View {
     }
 
     @Override
-    public Move readMove() throws ParseException {
+    public void notifyIsInCheck() {
+
+    }
+
+    @Override
+    public void highlightMoves(List<Move> moves) {
+
+    }
+
+    @Override
+    public Move readMove() {
         return null;
     }
 
