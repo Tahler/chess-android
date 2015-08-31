@@ -7,6 +7,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
@@ -15,14 +16,15 @@ import java.util.List;
 import edu.neumont.pro180.chess.R;
 import edu.neumont.pro180.chess.core.model.Move;
 import edu.neumont.pro180.chess.core.model.Piece;
+import edu.neumont.pro180.chess.core.model.Tile;
 
-public class ChessBoardView extends SurfaceView implements View {
+public class ChessBoardView extends SurfaceView implements View, android.view.View.OnTouchListener {
+    private View.Listener listener;
     private SurfaceHolder holder;
 
     public ChessBoardView(Context context, AttributeSet attrs) {
         super(context, attrs);
         holder = getHolder();
-
         holder.addCallback(new SurfaceHolder.Callback() {
             @Override
             public void surfaceCreated(SurfaceHolder surfaceHolder) {
@@ -114,5 +116,16 @@ public class ChessBoardView extends SurfaceView implements View {
             default:
                 return null;
         }
+    }
+
+    @Override
+    public void setListener(Listener listener) {
+        this.listener = listener;
+    }
+
+    @Override
+    public boolean onTouch(android.view.View v, MotionEvent event) {
+        if (listener != null) listener.tileSelected(new Tile(0, 0));
+        return false;
     }
 }

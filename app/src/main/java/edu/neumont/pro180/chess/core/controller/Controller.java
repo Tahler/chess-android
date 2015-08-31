@@ -4,6 +4,7 @@ import edu.neumont.pro180.chess.core.model.Board;
 import edu.neumont.pro180.chess.core.model.Color;
 import edu.neumont.pro180.chess.core.model.Move;
 import edu.neumont.pro180.chess.core.model.Piece;
+import edu.neumont.pro180.chess.core.model.Tile;
 import edu.neumont.pro180.chess.core.view.View;
 import edu.neumont.pro180.chess.exception.IllegalMoveException;
 
@@ -12,7 +13,7 @@ import edu.neumont.pro180.chess.exception.IllegalMoveException;
  * Instructs the view interface to interact with the user and retrieve moves.
  * Validates moves before executing them on the board.
  */
-public class Controller {
+public class Controller implements View.Listener {
     private final Board board;
     private final MoveValidator validator;
     private final View view;
@@ -21,6 +22,7 @@ public class Controller {
         this.board = new Board();
         this.validator = new MoveValidator(board);
         this.view = view;
+        this.view.setListener(this);
     }
 
     public void play() {
@@ -53,5 +55,10 @@ public class Controller {
 
         Color result = validator.getResult();
 //        view.print((result == null) ? "Stalemate!" : "Checkmate! The winner is " + result + "!");
+    }
+
+    @Override
+    public void tileSelected(Tile tile) {
+        view.highlightMoves(validator.getAllValidMoves(tile));
     }
 }
