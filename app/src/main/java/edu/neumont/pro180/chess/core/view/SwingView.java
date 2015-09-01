@@ -205,7 +205,7 @@ public class SwingView extends JFrame implements View{
                     Tile thisloc = new Tile(i,j);
                     if(headers && mouse!=null && thisloc.equals(mouse)){
                         g.setColor(new Color(150,205,205));
-                        g.fillRect(i*sqsiz+spacersizx+x, (j+1)*sqsiz+spacersizy+y, sqsiz, -1*sqsiz);
+                        g.fillRect(i*sqsiz+spacersizx+x, j*sqsiz+spacersizy+y, sqsiz, sqsiz);
                     }
                     else if(headers && movef!=null && thisloc.equals(movef)){
                         if(i%2==j%2){
@@ -214,7 +214,7 @@ public class SwingView extends JFrame implements View{
                         else{
                             g.setColor(new Color(155,100,100));
                         }
-                        g.fillRect(i*sqsiz+spacersizx+x, (j+1)*sqsiz+spacersizy+y, sqsiz, -1*sqsiz);
+                        g.fillRect(i*sqsiz+spacersizx+x, j*sqsiz+spacersizy+y, sqsiz, sqsiz);
                     }
                     else if(headers && avails.contains(thisloc)){
                         if(i%2==j%2){
@@ -223,23 +223,23 @@ public class SwingView extends JFrame implements View{
                         else{
                             g.setColor(new Color(155,100,100));
                         }
-                        g.fillRect(i*sqsiz+spacersizx+x, (j+1)*sqsiz+spacersizy+y, sqsiz, -1*sqsiz);
+                        g.fillRect(i*sqsiz+spacersizx+x, j*sqsiz+spacersizy+y, sqsiz, sqsiz);
                     }
                     else if(i%2!=j%2){
                         g.setColor(new Color(0,0,0));
-                        g.fillRect(i*sqsiz+spacersizx+x, (j+1)*sqsiz+spacersizy+y, sqsiz, -1*sqsiz);
+                        g.fillRect(i*sqsiz+spacersizx+x, j*sqsiz+spacersizy+y, sqsiz, sqsiz);
                     }
                     Piece piece = board[thisloc.y][thisloc.x];
                     if(piece!=null){
                         Image img = imgs.get(piece.toCharTeam());
                         if(img==null){
-//                            if(piece.isColor('L')){
-//                                g.setColor(new Color(255,100,0));
-//                            }
-//                            else{
-//                                g.setColor(new Color(105,50,0));
-//                            }
-                            g.drawString(piece.toString(), i*sqsiz+spacersizx+sqsiz/2+x, (j+1)*sqsiz+spacersizy+sqsiz/2+y);
+                        	if(piece.getColor().equals(edu.neumont.pro180.chess.core.model.Color.LIGHT)){
+                                g.setColor(new Color(255,100,0));
+                            }
+                            else{
+                                g.setColor(new Color(105,50,0));
+                            }
+                            g.drawString(piece.toString(), i*sqsiz+spacersizx+sqsiz/2+x, j*sqsiz+spacersizy+sqsiz/2+y);
                         }
                         else{
                             g.drawImage(img, i*sqsiz+spacersizx+x, j*sqsiz+spacersizy+y, sqsiz,sqsiz, null);
