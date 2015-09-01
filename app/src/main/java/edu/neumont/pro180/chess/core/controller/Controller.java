@@ -1,7 +1,5 @@
 package edu.neumont.pro180.chess.core.controller;
 
-import android.util.Log;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -94,11 +92,11 @@ public class Controller implements View.Listener {
     @Override
     public void tileSelected(Tile tile) {
         if (tile != null) {
-            Log.d("TileSelected", tile.x + ", " + tile.y);
+            System.out.println("TileSelected" + tile.x + ", " + tile.y);
             List<Move> validMovesAtTile = validator.getAllValidMoves(tile);
             List<Tile> ends = new ArrayList<>();
             for (Move m : validMovesAtTile) {
-                Log.d("Move", m.toString());
+                System.out.println("Move" + m.toString());
                 ends.add(m.getEnd());
             }
             view.displayBoard(board.getPieces());

@@ -39,6 +39,7 @@ public class SwingView extends JFrame implements View{
     Move newcmd;
     List<Tile> avails;
     Map<Character, Image> imgs;
+    Listener listener;
 
     public SwingView(){
         setTitle("Chess");
@@ -62,6 +63,10 @@ public class SwingView extends JFrame implements View{
                     }});
                 addMouseListener(new MouseListener(){
                     public void mouseClicked(MouseEvent arg0) {
+                    	if(listener!=null){
+                    		listener.tileSelected(getloc(arg0.getX(), arg0.getY()));
+                    	}
+                    	/*
 //                        if(mode==Model.MODE.PLAY){
                             if(movef==null){
                                 movef = getloc(arg0.getX(), arg0.getY());
@@ -78,6 +83,7 @@ public class SwingView extends JFrame implements View{
                                 avails.clear();
                             }
 //                        }
+                    	 */
                     }
                     public void mouseEntered(MouseEvent arg0) {
 
@@ -270,8 +276,7 @@ public class SwingView extends JFrame implements View{
 	}
 	@Override
 	public void setListener(Listener listener) {
-		// TODO Auto-generated method stub
-		
+		this.listener = listener;
 	}
 	
     public static void main(String[] args){
