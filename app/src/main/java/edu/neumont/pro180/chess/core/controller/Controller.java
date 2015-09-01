@@ -95,13 +95,16 @@ public class Controller implements View.Listener {
     public void tileSelected(Tile tile) {
         if (tile != null) {
             Log.d("TileSelected", tile.x + ", " + tile.y);
+
             List<Move> validMovesAtTile = validator.getAllValidMoves(tile);
+
             List<Tile> ends = new ArrayList<>();
             for (Move m : validMovesAtTile) {
                 Log.d("Move", m.toString());
                 ends.add(m.getEnd());
             }
-            view.displayBoard(board.getPieces());
+
+//            view.displayBoard(board.getPieces());
             view.highlightTiles(tile, ends);
         }
     }

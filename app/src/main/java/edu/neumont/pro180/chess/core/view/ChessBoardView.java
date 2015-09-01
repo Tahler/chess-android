@@ -15,6 +15,7 @@ import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import edu.neumont.pro180.chess.R;
@@ -28,9 +29,11 @@ public class ChessBoardView extends SurfaceView implements View, android.view.Vi
     private Paint paint;
     private static int tileSize;
     private Piece[][] pieces; // cached, set from the controller call
+    private List<Tile> highlightedTiles;
 
     public ChessBoardView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        highlightedTiles = new ArrayList<>();
         holder = getHolder();
         holder.addCallback(new SurfaceHolder.Callback() {
             @Override
@@ -129,12 +132,12 @@ public class ChessBoardView extends SurfaceView implements View, android.view.Vi
         return null;
     }
 
+    /**
+     * Sets the pieces to be later drawn in the next possible display
+     * @param pieces The updated Piece[][] from the board
+     */
     @Override
     public void displayBoard(Piece[][] pieces) {
-        updatePieces(pieces);
-    }
-
-    public void updatePieces(Piece[][] pieces) {
         Log.d("displayBoard()", "Received new Piece[][] set");
         this.pieces = pieces;
     }
@@ -162,6 +165,7 @@ public class ChessBoardView extends SurfaceView implements View, android.view.Vi
         for (Tile end : ends) {
             highlightTile(end, Color.YELLOW, canvas);
         }
+        highlightedTiles = ends; // used by onTouch
         // TODO captures in red? might look dumb
 
         drawPieces(canvas);
@@ -277,12 +281,11 @@ public class ChessBoardView extends SurfaceView implements View, android.view.Vi
     @Override
     public boolean onTouch(android.view.View v, MotionEvent event) {
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
-            // For testing
-//            if (listener != null) listener.tileSelected(getTileAt(event.getX(), event.getY()));
+            Tile selected = getTileAt(event.getX(), event.getY());
 
-            if (from == null) { // First touch (selecting the piece to move)
+            if (!highlightedTiles.contains(selected)) { // First touch (selecting the piece to move)
                 from = getTileAt(event.getX(), event.getY());
-                if (listener != null) listener.tileSelected(from);
+                listener.tileSelected(from);
             } else { // Second touch (selecting the destination)
                 to = getTileAt(event.getX(), event.getY());
             }

@@ -29,7 +29,6 @@ public class Tile {
 
         if (x != null ? !x.equals(tile.x) : tile.x != null) return false;
         return !(y != null ? !y.equals(tile.y) : tile.y != null);
-
     }
 
     @Override
