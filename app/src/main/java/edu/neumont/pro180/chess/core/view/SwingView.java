@@ -252,7 +252,7 @@ public class SwingView extends JFrame implements View{
     }
 
 	@Override
-	public void notifyIsInCheck() {
+	public void notifyCheck() {
 		// TODO Auto-generated method stub
 
 	}

@@ -170,8 +170,15 @@ public class ChessBoardView extends SurfaceView implements View, android.view.Vi
     }
 
     @Override
-    public void notifyIsInCheck() {
-        // TODO notify the user of check
+    public void notifyCheck() {
+        // TODO
+        System.out.println("Check!");
+    }
+
+    @Override
+    public void notifyGameOver(edu.neumont.pro180.chess.core.model.Color result) {
+        // TODO
+        System.out.println((result == null) ? "Stalemate!" : "Checkmate! The winner is " + result + "!");
     }
 
     /**
@@ -207,13 +214,13 @@ public class ChessBoardView extends SurfaceView implements View, android.view.Vi
         ), paint);
 
         paint.setColor(color);
-        int padding = 2;
+        int borderWidth = 2;
         canvas.drawRect(new Rect(
-                tile.x * tileSize + padding,
-                tile.y * tileSize + padding,
-                tile.x * tileSize + tileSize - padding,
-                tile.y * tileSize + tileSize - padding
-            ), paint);
+                tile.x * tileSize + borderWidth,
+                tile.y * tileSize + borderWidth,
+                tile.x * tileSize + tileSize - borderWidth,
+                tile.y * tileSize + tileSize - borderWidth
+        ), paint);
     }
 
     @Override

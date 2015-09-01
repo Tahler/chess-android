@@ -28,66 +28,6 @@ public class Controller implements View.Listener {
         this.view.displayBoard(board.getPieces());
     }
 
-    // Control flow
-    public void play() {
-        do {
-            Move move = view.readMove();
-            // If the move is valid
-            if (validator.getAllValidMoves(move.getStart()).contains(move)) {
-                board.makeMove(move);
-            } else {
-                continue; // retry until a valid move is made
-            }
-
-            // Pawn promotion
-            boolean piecePromotion = false;
-            Piece mover = board.getPieceAt(move.getEnd()); // The piece has already moved, so it is in its ending spot
-            if (mover.getType().equals(Piece.Type.PAWN)) {
-                if (mover.getColor().equals(Color.LIGHT)) {
-                    if (move.getEnd().y == 0) piecePromotion = true;
-                } else {
-                    if (move.getEnd().y == 7) piecePromotion = true;
-                }
-            }
-            if (piecePromotion) mover.setType(view.getPawnPromotion());
-
-            view.displayBoard(board.getPieces());
-        } while (!validator.isOver());
-    }
-
-
-//    public void play() {
-//        do {
-//            Move move;
-//            try {
-//                move = view.readMove();
-//                if (move == null) break;
-//                validator.validate(move);
-//                board.makeMove(move);
-//
-//                // Pawn promotion
-//                boolean piecePromotion = false;
-//                Piece mover = board.getPieceAt(move.getEnd()); // The piece has already moved, so it is in its ending spot
-//                if (mover.getType().equals(Piece.Type.PAWN)) {
-//                    if (mover.getColor().equals(Color.LIGHT)) {
-//                        if (move.getEnd().y == 0) piecePromotion = true;
-//                    } else {
-//                        if (move.getEnd().y == 7) piecePromotion = true;
-//                    }
-//                }
-//                if (piecePromotion) mover.setType(view.getPawnPromotion());
-//
-//                // Check checking
-//                if (validator.isInCheck() && !validator.isOver()) view.notifyIsInCheck();
-//            } catch (IllegalMoveException e) {
-////                view.print(e.getMessage());
-//            }
-//        } while (!validator.isOver());
-//
-//        Color result = validator.getResult();
-////        view.print((result == null) ? "Stalemate!" : "Checkmate! The winner is " + result + "!");
-//    }
-
     @Override
     public void tileSelected(Tile tile) {
         if (tile != null) {
@@ -107,10 +47,11 @@ public class Controller implements View.Listener {
         System.out.println("View sent a move");
 
         // If the move is valid
+        // The move is already practically valid through the view. Consider removing this if statement
         if (validator.getAllValidMoves(move.getStart()).contains(move)) {
             board.makeMove(move);
         } else {
-            System.out.println();
+            System.err.println("Something very weird happened - the move was invalid");
             return; // retry until a valid move is made
         }
 
@@ -126,9 +67,12 @@ public class Controller implements View.Listener {
         }
         if (piecePromotion) mover.setType(view.getPawnPromotion());
 
+        if (validator.isInCheck()) view.notifyCheck();
+
         // Send the new Piece[][] to the view
         view.displayBoard(board.getPieces());
 
-//        if (validator.isOver()) // End the game
+        // If this move has now ended the game, end the game.
+        if (validator.isOver()) view.notifyGameOver(validator.getResult());
     }
 }
