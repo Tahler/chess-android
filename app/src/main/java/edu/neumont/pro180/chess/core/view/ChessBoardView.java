@@ -10,7 +10,7 @@ import android.util.AttributeSet;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
-import java.text.ParseException;
+import java.util.List;
 
 import edu.neumont.pro180.chess.R;
 import edu.neumont.pro180.chess.core.model.Move;
@@ -53,9 +53,9 @@ public class ChessBoardView extends SurfaceView implements View {
         // TODO: probably need to encapsulate the tiles to know which tile is touched... would be useful for readMove()
 
         // Draw the tiles
+        Paint paint = new Paint();
         for (int i = 0; i < 8; i++) { // horizontal
             for (int j = 0; j < 8; j++) { // vertical
-                Paint paint = new Paint();
                 paint.setColor(((i + j) % 2 == 0) ? Color.WHITE : Color.GRAY);
                 canvas.drawRect(
                         i * tileSize,
@@ -69,7 +69,17 @@ public class ChessBoardView extends SurfaceView implements View {
     }
 
     @Override
-    public Move readMove() throws ParseException {
+    public void notifyIsInCheck() {
+
+    }
+
+    @Override
+    public void highlightMoves(List<Move> moves) {
+
+    }
+
+    @Override
+    public Move readMove() {
         return null;
     }
 
