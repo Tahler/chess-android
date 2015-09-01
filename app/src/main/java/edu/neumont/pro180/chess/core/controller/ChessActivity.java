@@ -4,7 +4,7 @@ import android.app.Activity;
 import android.os.Bundle;
 
 import edu.neumont.pro180.chess.R;
-import edu.neumont.pro180.chess.core.view.ChessBoardView;
+import edu.neumont.pro180.chess.core.view.View;
 
 /**
  * Simply wraps the Controller in an activity, so that it may run on Android.
@@ -15,7 +15,9 @@ public class ChessActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chess);
 
-        Controller controller = new Controller((ChessBoardView) findViewById(R.id.chess_board_view));
-//        controller.play();
+        View view = (View) findViewById(R.id.chess_board_view);
+        System.out.println(view);
+        Controller controller = new Controller(view);
+        controller.play();
     }
 }

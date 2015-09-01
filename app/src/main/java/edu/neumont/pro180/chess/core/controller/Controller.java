@@ -2,6 +2,7 @@ package edu.neumont.pro180.chess.core.controller;
 
 import android.util.Log;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import edu.neumont.pro180.chess.core.model.Board;
@@ -23,7 +24,7 @@ public class Controller implements View.Listener {
     private final View view;
 
     // Test TODO this was a test, the controller should be calling displayBoard on the view
-    public static Piece[][] pieces;
+//    public static Piece[][] pieces;
 
     public Controller(View view) {
         this.board = new Board();
@@ -31,11 +32,12 @@ public class Controller implements View.Listener {
         this.view = view;
         this.view.setListener(this);
 //        this.view.displayBoard(board.getPieces()); // TODO this was returning null pointer
-        pieces = board.getPieces();
+//        pieces = board.getPieces();
     }
 
     public void play() {
         do {
+            view.displayBoard(board.getPieces());
             Move move;
             try {
                 move = view.readMove();
@@ -71,10 +73,12 @@ public class Controller implements View.Listener {
         if (tile != null) {
             Log.d("TileSelected", tile.x + ", " + tile.y);
             List<Move> validMovesAtTile = validator.getAllValidMoves(tile);
+            List<Tile> ends = new ArrayList<>();
             for (Move m : validMovesAtTile) {
                 Log.d("Move", m.toString());
+                ends.add(m.getEnd());
             }
-            view.highlightMoves(validMovesAtTile);
+            view.highlightTiles(tile, ends);
         }
     }
 }

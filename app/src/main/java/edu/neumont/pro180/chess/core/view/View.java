@@ -9,7 +9,7 @@ import edu.neumont.pro180.chess.core.model.Tile;
 public interface View {
     void displayBoard(Piece[][] pieces);
     void notifyIsInCheck();
-    void highlightMoves(List<Move> moves);
+    void highlightTiles(Tile start, List<Tile> ends);
     Move readMove();
     Piece.Type getPawnPromotion();
 

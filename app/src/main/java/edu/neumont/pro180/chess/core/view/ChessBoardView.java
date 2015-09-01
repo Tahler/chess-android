@@ -8,6 +8,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -17,7 +18,6 @@ import android.view.SurfaceView;
 import java.util.List;
 
 import edu.neumont.pro180.chess.R;
-import edu.neumont.pro180.chess.core.controller.Controller;
 import edu.neumont.pro180.chess.core.model.Move;
 import edu.neumont.pro180.chess.core.model.Piece;
 import edu.neumont.pro180.chess.core.model.Tile;
@@ -25,6 +25,7 @@ import edu.neumont.pro180.chess.core.model.Tile;
 public class ChessBoardView extends SurfaceView implements View, android.view.View.OnTouchListener {
     private View.Listener listener;
     private SurfaceHolder holder;
+    private Paint paint;
     private static int tileSize;
     private Piece[][] pieces; // cached, set from the controller call
 
@@ -37,27 +38,24 @@ public class ChessBoardView extends SurfaceView implements View, android.view.Vi
                 tileSize = (int) (getWidth() / 8.0);
                 Log.d("TILE_SIZE", String.valueOf(tileSize));
 
-                Canvas canvas = holder.lockCanvas(null);
-                draw(canvas);
-                holder.unlockCanvasAndPost(canvas);
+                paint = new Paint();
 
-                displayBoard(Controller.pieces);
+                draw();
             }
 
             public void surfaceChanged(SurfaceHolder surfaceHolder, int i, int i2, int i3) {}
             public void surfaceDestroyed(SurfaceHolder surfaceHolder) {}
         });
-
         setOnTouchListener(this);
     }
 
     @Override
     public void draw(Canvas canvas) {
+        if (canvas == null) return;
         Log.d("DRAW", "Redrawing the screen");
         canvas.drawColor(Color.BLACK);
 
         // Draw the tiles
-        Paint paint = new Paint();
         for (int i = 0; i < 8; i++) { // horizontal
             for (int j = 0; j < 8; j++) { // vertical
                 paint.setColor(((i + j) % 2 == 0) ? Color.WHITE : Color.GRAY);
@@ -70,7 +68,7 @@ public class ChessBoardView extends SurfaceView implements View, android.view.Vi
                 if (pieces != null) {
                     Piece piece = pieces[j][i];
                     if (piece != null) {
-                        // TODO, store these bitmaps at the beginning
+                        // TODO store these bitmaps from the start
 
                         // This is immutable, and not scaled to the size of the tile
                         Bitmap unscaled = getPieceBitMap(piece);
@@ -127,9 +125,15 @@ public class ChessBoardView extends SurfaceView implements View, android.view.Vi
         Log.d("displayBoard()", "Received new Piece[][] set");
         this.pieces = pieces;
 
+        draw();
+    }
+
+    private void draw() {
         Canvas canvas = holder.lockCanvas(null);
-        draw(canvas);
-        holder.unlockCanvasAndPost(canvas);
+        if (canvas != null) {
+            draw(canvas);
+            holder.unlockCanvasAndPost(canvas);
+        }
     }
 
     @Override
@@ -138,16 +142,34 @@ public class ChessBoardView extends SurfaceView implements View, android.view.Vi
     }
 
     @Override
-    public void highlightMoves(List<Move> moves) {
-        // TODO call highlightTile on all move ends in yellow, start in blue, (..captures in red?)
+    public void highlightTiles(Tile start, List<Tile> ends) {
+        highlightTile(start, Color.BLUE);
+        for (Tile end : ends) {
+            highlightTile(end, Color.YELLOW);
+        }
+        // TODO captures in red? might look dumb
     }
 
-    public void highlightTile(Tile tile, Color color) {
-
+    public void highlightTile(Tile tile, int color) {
+        Canvas canvas = holder.lockCanvas();
+        paint.setColor(color);
+        canvas.drawRect(
+                new Rect(
+                        tile.x * tileSize,
+                        tile.y * tileSize,
+                        tile.x * tileSize + tileSize,
+                        tile.y * tileSize + tileSize),
+                paint);
+        holder.unlockCanvasAndPost(canvas);
     }
 
     @Override
     public Move readMove() {
+        try {
+            Thread.sleep(100000L);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         return null;
     }
 
