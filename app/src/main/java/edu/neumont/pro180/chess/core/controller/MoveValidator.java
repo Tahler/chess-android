@@ -1,33 +1,33 @@
 package edu.neumont.pro180.chess.core.controller;
 
-import edu.neumont.pro180.chess.core.model.*;
+import java.util.ArrayList;
+import java.util.List;
+
+import edu.neumont.pro180.chess.core.model.AbstractBoard;
+import edu.neumont.pro180.chess.core.model.Board;
+import edu.neumont.pro180.chess.core.model.BoardBuffer;
+import edu.neumont.pro180.chess.core.model.Color;
+import edu.neumont.pro180.chess.core.model.Move;
+import edu.neumont.pro180.chess.core.model.Piece;
+import edu.neumont.pro180.chess.core.model.Tile;
 import edu.neumont.pro180.chess.exception.IllegalMoveException;
 
-import java.util.*;
-
 public class MoveValidator {
-    public AbstractBoard board;
+    private AbstractBoard board;
 
     public MoveValidator(Board board) {
         this.board = board;
     }
 
+    /**
+     * Succeeds if valid, otherwise throws an exception
+     * @param move
+     * @throws IllegalMoveException
+     */
     public void validate(Move move) throws IllegalMoveException {
-//        // 1. There must be a piece to move.
-        Piece mover = board.getPieceAt(move.getStart());
-        if (mover == null) throw new IllegalMoveException("There is no piece at " + move.getStart() + "!");
-
-//        // 2. It must be that piece's color's turn
-//        Color color = mover.getColor();
-//        if (!color.equals(((Board) board).getCurrentTurnColor())) throw new IllegalMoveException("It is not " + color + "'s turn!");
-//
-//        if (wouldPlaceKingInCheck(move)) throw new IllegalMoveException("That move would leave your king in check!");
-
-        // 3. That must be a possible move
-        if (!getAllValidMoves(move.getStart()).contains(move)) throw new IllegalMoveException("The " + mover.toStringTeam() + " cannot move to " + move.getEnd() + "!");
-
-        // TODO: if krebs complains about specificity of illegal moves, create many methods that would delegate more contains to the getXMoves()
-//        return true;
+        if (!getAllValidMoves(move.getStart()).contains(move)) {
+            throw new IllegalMoveException("The " + board.getPieceAt(move.getStart()).toStringTeam() + " cannot move to " + move.getEnd() + "!");
+        }
     }
 
     /**
