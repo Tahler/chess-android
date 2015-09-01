@@ -17,7 +17,7 @@ import android.view.SurfaceView;
 import java.util.List;
 
 import edu.neumont.pro180.chess.R;
-import edu.neumont.pro180.chess.core.model.Board;
+import edu.neumont.pro180.chess.core.controller.Controller;
 import edu.neumont.pro180.chess.core.model.Move;
 import edu.neumont.pro180.chess.core.model.Piece;
 import edu.neumont.pro180.chess.core.model.Tile;
@@ -25,7 +25,7 @@ import edu.neumont.pro180.chess.core.model.Tile;
 public class ChessBoardView extends SurfaceView implements View, android.view.View.OnTouchListener {
     private View.Listener listener;
     private SurfaceHolder holder;
-    private static float tileSize;
+    private static int tileSize;
     private Piece[][] pieces; // cached, set from the controller call
 
     public ChessBoardView(Context context, AttributeSet attrs) {
@@ -34,28 +34,27 @@ public class ChessBoardView extends SurfaceView implements View, android.view.Vi
         holder.addCallback(new SurfaceHolder.Callback() {
             @Override
             public void surfaceCreated(SurfaceHolder surfaceHolder) {
+                tileSize = (int) (getWidth() / 8.0);
+                Log.d("TILE_SIZE", String.valueOf(tileSize));
+
                 Canvas canvas = holder.lockCanvas(null);
-                onDraw(canvas);
+                draw(canvas);
                 holder.unlockCanvasAndPost(canvas);
+
+                displayBoard(Controller.pieces);
             }
 
-            @Override
             public void surfaceChanged(SurfaceHolder surfaceHolder, int i, int i2, int i3) {}
-
-            @Override
             public void surfaceDestroyed(SurfaceHolder surfaceHolder) {}
         });
-        this.setOnTouchListener(this);
-//        BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher);
+
+        setOnTouchListener(this);
     }
 
     @Override
-    protected void onDraw(Canvas canvas) {
-        Log.d("DRAW", "DRAW");
+    public void draw(Canvas canvas) {
+        Log.d("DRAW", "Redrawing the screen");
         canvas.drawColor(Color.BLACK);
-
-        tileSize = (float) (getWidth() / 8.0);
-        Log.d("TILE_SIZE", String.valueOf(tileSize));
 
         // Draw the tiles
         Paint paint = new Paint();
@@ -69,16 +68,25 @@ public class ChessBoardView extends SurfaceView implements View, android.view.Vi
                         j * tileSize + tileSize,
                         paint);
                 if (pieces != null) {
-                    Piece piece = pieces[i][j]; // j, i?
+                    Piece piece = pieces[j][i];
                     if (piece != null) {
-                        Bitmap pieceBitMap = getPieceBitMap(piece);
-                        canvas.drawBitmap(pieceBitMap, i * tileSize, j * tileSize, paint); // Replace paint with null?
+                        // TODO, store these bitmaps at the beginning
+
+                        // This is immutable, and not scaled to the size of the tile
+                        Bitmap unscaled = getPieceBitMap(piece);
+
+                        // Create a scaled instance of the above
+                        Bitmap scaled = Bitmap.createScaledBitmap(unscaled, tileSize, tileSize, false);
+                        canvas.drawBitmap(scaled, i * tileSize, j * tileSize, paint);
                     }
                 }
             }
         }
     }
 
+    /**
+     * @return An immutable Bitmap representing the piece
+     */
     private Bitmap getPieceBitMap(Piece piece) {
         if (piece.getColor().equals(edu.neumont.pro180.chess.core.model.Color.LIGHT)) {
             switch (piece.getType()) {
@@ -116,7 +124,12 @@ public class ChessBoardView extends SurfaceView implements View, android.view.Vi
 
     @Override
     public void displayBoard(Piece[][] pieces) {
+        Log.d("displayBoard()", "Received new Piece[][] set");
         this.pieces = pieces;
+
+        Canvas canvas = holder.lockCanvas(null);
+        draw(canvas);
+        holder.unlockCanvasAndPost(canvas);
     }
 
     @Override
