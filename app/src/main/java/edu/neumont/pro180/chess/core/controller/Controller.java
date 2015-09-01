@@ -23,21 +23,24 @@ public class Controller implements View.Listener {
     private final MoveValidator validator;
     private final View view;
 
-    // Test TODO this was a test, the controller should be calling displayBoard on the view
-//    public static Piece[][] pieces;
-
     public Controller(View view) {
         this.board = new Board();
         this.validator = new MoveValidator(board);
         this.view = view;
         this.view.setListener(this);
-//        this.view.displayBoard(board.getPieces()); // TODO this was returning null pointer
-//        pieces = board.getPieces();
+        this.view.displayBoard(board.getPieces()); // TODO this was returning null pointer
+    }
+
+    // For testing the graphics
+    public void test() {
+        for (;;) {
+            view.displayBoard(board.getPieces());
+
+        }
     }
 
     public void play() {
         do {
-            view.displayBoard(board.getPieces());
             Move move;
             try {
                 move = view.readMove();
@@ -78,6 +81,7 @@ public class Controller implements View.Listener {
                 Log.d("Move", m.toString());
                 ends.add(m.getEnd());
             }
+            view.displayBoard(board.getPieces());
             view.highlightTiles(tile, ends);
         }
     }

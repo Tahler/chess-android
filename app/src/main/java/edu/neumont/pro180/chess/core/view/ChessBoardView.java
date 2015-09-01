@@ -143,34 +143,50 @@ public class ChessBoardView extends SurfaceView implements View, android.view.Vi
 
     @Override
     public void highlightTiles(Tile start, List<Tile> ends) {
-        highlightTile(start, Color.BLUE);
+        Canvas canvas = holder.lockCanvas();
+
+        highlightTile(start, Color.BLUE, canvas);
         for (Tile end : ends) {
-            highlightTile(end, Color.YELLOW);
+            highlightTile(end, Color.YELLOW, canvas);
         }
         // TODO captures in red? might look dumb
+
+        holder.unlockCanvasAndPost(canvas);
     }
 
+    /**
+     * Redirected to highlightTile(Tile, int, Canvas) with the canvas argument as the
+     * SurfaceHolder's locked canvas. holder.unlockCanvasAndPost(canvas) is called at the end.
+     */
     public void highlightTile(Tile tile, int color) {
         Canvas canvas = holder.lockCanvas();
-        paint.setColor(color);
-        canvas.drawRect(
-                new Rect(
-                        tile.x * tileSize,
-                        tile.y * tileSize,
-                        tile.x * tileSize + tileSize,
-                        tile.y * tileSize + tileSize),
-                paint);
+        highlightTile(tile, color, canvas);
         holder.unlockCanvasAndPost(canvas);
+    }
+
+    public void highlightTile(Tile tile, int color, Canvas canvas) {
+        paint.setColor(Color.BLACK);
+        canvas.drawRect(new Rect(
+                tile.x * tileSize,
+                tile.y * tileSize,
+                tile.x * tileSize + tileSize,
+                tile.y * tileSize + tileSize
+            ), paint);
+
+        paint.setColor(color);
+        int padding = 2;
+        canvas.drawRect(new Rect(
+                tile.x * tileSize + padding,
+                tile.y * tileSize + padding,
+                tile.x * tileSize + tileSize - padding,
+                tile.y * tileSize + tileSize - padding
+            ), paint);
     }
 
     @Override
     public Move readMove() {
-        try {
-            Thread.sleep(100000L);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        return null;
+        while (from == null && to == null); // TODO: bad practice?
+        return new Move(from, to);
     }
 
     @Override
@@ -219,11 +235,18 @@ public class ChessBoardView extends SurfaceView implements View, android.view.Vi
     @Override
     public boolean onTouch(android.view.View v, MotionEvent event) {
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
+            // For testing
+//            if (listener != null) listener.tileSelected(getTileAt(event.getX(), event.getY()));
+
             if (from == null) { // First touch (selecting the piece to move)
                 from = getTileAt(event.getX(), event.getY());
                 if (listener != null) listener.tileSelected(from);
             } else { // Second touch (selecting the destination)
                 to = getTileAt(event.getX(), event.getY());
+
+                // Reset (?)
+                from = null;
+                to = null;
                 // TODO: Send the move to the controller ( new Move(from, to) )
             }
 

@@ -18,6 +18,6 @@ public class ChessActivity extends Activity {
         View view = (View) findViewById(R.id.chess_board_view);
         System.out.println(view);
         Controller controller = new Controller(view);
-        controller.play();
+//        controller.play();
     }
 }
