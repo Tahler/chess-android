@@ -121,7 +121,7 @@ public class SwingView extends JFrame implements View{
                 headsizy = (getHeight()-8*sqsiz)/2;
 
                 int col = x<headsizx?-1 : (x-headsizx)/sqsiz;
-                int row = getHeight()-y<headsizy?-1 : (getHeight()-(y+headsizy))/sqsiz;
+                int row = y<headsizy?-1 : (y-headsizy)/sqsiz;
                 try{
                 	return new Tile(col, row);
                 } catch(IndexOutOfBoundsException e){
@@ -137,24 +137,45 @@ public class SwingView extends JFrame implements View{
 		String imgloc = "./res/drawable-hdpi/";
 		File filoc;
 		try {
-			filoc = new File(imgloc, "pl.png"); if(filoc.exists()){imgs.put('P', ImageIO.read(filoc));}
-			filoc = new File(imgloc, "rl.png"); if(filoc.exists()){imgs.put('R', ImageIO.read(filoc));}
-			filoc = new File(imgloc, "nl.png"); if(filoc.exists()){imgs.put('N', ImageIO.read(filoc));}
-			filoc = new File(imgloc, "bl.png"); if(filoc.exists()){imgs.put('B', ImageIO.read(filoc));}
-			filoc = new File(imgloc, "ql.png"); if(filoc.exists()){imgs.put('Q', ImageIO.read(filoc));}
-			filoc = new File(imgloc, "kl.png"); if(filoc.exists()){imgs.put('K', ImageIO.read(filoc));}
-			filoc = new File(imgloc, "pd.png"); if(filoc.exists()){imgs.put('p', ImageIO.read(filoc));}
-			filoc = new File(imgloc, "rd.png"); if(filoc.exists()){imgs.put('r', ImageIO.read(filoc));}
-			filoc = new File(imgloc, "nd.png"); if(filoc.exists()){imgs.put('n', ImageIO.read(filoc));}
-			filoc = new File(imgloc, "bd.png"); if(filoc.exists()){imgs.put('b', ImageIO.read(filoc));}
-			filoc = new File(imgloc, "qd.png"); if(filoc.exists()){imgs.put('q', ImageIO.read(filoc));}
-			filoc = new File(imgloc, "kd.png"); if(filoc.exists()){imgs.put('k', ImageIO.read(filoc));}
+			filoc = new File(imgloc, "pl.png"); if(filoc.exists()){imgs.put('p', ImageIO.read(filoc));}
+			filoc = new File(imgloc, "rl.png"); if(filoc.exists()){imgs.put('r', ImageIO.read(filoc));}
+			filoc = new File(imgloc, "nl.png"); if(filoc.exists()){imgs.put('n', ImageIO.read(filoc));}
+			filoc = new File(imgloc, "bl.png"); if(filoc.exists()){imgs.put('b', ImageIO.read(filoc));}
+			filoc = new File(imgloc, "ql.png"); if(filoc.exists()){imgs.put('q', ImageIO.read(filoc));}
+			filoc = new File(imgloc, "kl.png"); if(filoc.exists()){imgs.put('k', ImageIO.read(filoc));}
+			filoc = new File(imgloc, "pd.png"); if(filoc.exists()){imgs.put('P', ImageIO.read(filoc));}
+			filoc = new File(imgloc, "rd.png"); if(filoc.exists()){imgs.put('R', ImageIO.read(filoc));}
+			filoc = new File(imgloc, "nd.png"); if(filoc.exists()){imgs.put('N', ImageIO.read(filoc));}
+			filoc = new File(imgloc, "bd.png"); if(filoc.exists()){imgs.put('B', ImageIO.read(filoc));}
+			filoc = new File(imgloc, "qd.png"); if(filoc.exists()){imgs.put('Q', ImageIO.read(filoc));}
+			filoc = new File(imgloc, "kd.png"); if(filoc.exists()){imgs.put('K', ImageIO.read(filoc));}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		avails = new ArrayList<Tile>();
     }
-
+    
+    protected char inttocolchar(int col){
+    	switch(col){
+    	case 0:
+    		return 'A';
+    	case 1:
+    		return 'B';
+    	case 2:
+    		return 'C';
+    	case 3:
+    		return 'D';
+    	case 4:
+    		return 'E';
+    	case 5:
+    		return 'F';
+    	case 6:
+    		return 'G';
+    	case 7:
+    		return 'H';
+    	}
+    	return '-';
+    }
     public void drawBoard(Piece[][] board, Graphics g, int x,int y, int width,int height, boolean headers) {
         if (board != null) {
             int headsiz = headers ? (Math.max(g.getFontMetrics().getHeight(), g.getFontMetrics().charWidth('M')) + 2) : 0;
@@ -174,17 +195,17 @@ public class SwingView extends JFrame implements View{
             g.fillRect(spacersizx+x, spacersizy+y, 8*sqsiz, 8*sqsiz);
             for(int i=0; i<8; i++){
                 g.setColor(new Color(0,0,0));
-//                if(headers){
-//                    g.drawString(""+ChessBoardLoc.colcharfrombyte(i), i*sqsiz+spacersizx+sqsiz/2+x, spacersizy-headsiz/4+y);
-//                    g.drawString(""+ChessBoardLoc.colcharfrombyte(i), i*sqsiz+spacersizx+sqsiz/2+x, height-spacersizy+headsiz*2/3+y);
-//                    g.drawString(""+(i+1), spacersizx-headsiz*2/3+x, (7-i)*sqsiz+spacersizy+sqsiz/2+y);
-//                    g.drawString(""+(i+1), width-spacersizx+headsiz/3+x, (7-i)*sqsiz+spacersizy+sqsiz/2+y);
-//                }
+                if(headers){
+                    g.drawString(""+inttocolchar(i), i*sqsiz+spacersizx+sqsiz/2+x, spacersizy-headsiz/4+y);
+                    g.drawString(""+inttocolchar(i), i*sqsiz+spacersizx+sqsiz/2+x, height-spacersizy+headsiz*2/3+y);
+                    g.drawString(""+(i+1), spacersizx-headsiz*2/3+x, (7-i)*sqsiz+spacersizy+sqsiz/2+y);
+                    g.drawString(""+(i+1), width-spacersizx+headsiz/3+x, (7-i)*sqsiz+spacersizy+sqsiz/2+y);
+                }
                 for(int j=0; j<8; j++){
                     Tile thisloc = new Tile(i,j);
                     if(headers && mouse!=null && thisloc.equals(mouse)){
                         g.setColor(new Color(150,205,205));
-                        g.fillRect(i*sqsiz+spacersizx+x, height-(j*sqsiz+spacersizy)+y, sqsiz, -1*sqsiz);
+                        g.fillRect(i*sqsiz+spacersizx+x, (j+1)*sqsiz+spacersizy+y, sqsiz, -1*sqsiz);
                     }
                     else if(headers && movef!=null && thisloc.equals(movef)){
                         if(i%2==j%2){
@@ -193,7 +214,7 @@ public class SwingView extends JFrame implements View{
                         else{
                             g.setColor(new Color(155,100,100));
                         }
-                        g.fillRect(i*sqsiz+spacersizx+x, height-(j*sqsiz+spacersizy)+y, sqsiz, -1*sqsiz);
+                        g.fillRect(i*sqsiz+spacersizx+x, (j+1)*sqsiz+spacersizy+y, sqsiz, -1*sqsiz);
                     }
                     else if(headers && avails.contains(thisloc)){
                         if(i%2==j%2){
@@ -202,11 +223,11 @@ public class SwingView extends JFrame implements View{
                         else{
                             g.setColor(new Color(155,100,100));
                         }
-                        g.fillRect(i*sqsiz+spacersizx+x, height-(j*sqsiz+spacersizy)+y, sqsiz, -1*sqsiz);
+                        g.fillRect(i*sqsiz+spacersizx+x, (j+1)*sqsiz+spacersizy+y, sqsiz, -1*sqsiz);
                     }
                     else if(i%2!=j%2){
                         g.setColor(new Color(0,0,0));
-                        g.fillRect(i*sqsiz+spacersizx+x, height-(j*sqsiz+spacersizy)+y, sqsiz, -1*sqsiz);
+                        g.fillRect(i*sqsiz+spacersizx+x, (j+1)*sqsiz+spacersizy+y, sqsiz, -1*sqsiz);
                     }
                     Piece piece = board[thisloc.y][thisloc.x];
                     if(piece!=null){
@@ -218,10 +239,10 @@ public class SwingView extends JFrame implements View{
 //                            else{
 //                                g.setColor(new Color(105,50,0));
 //                            }
-                            g.drawString(piece.toString(), i*sqsiz+spacersizx+sqsiz/2+x, height-(j*sqsiz+spacersizy+sqsiz/2)+y);
+                            g.drawString(piece.toString(), i*sqsiz+spacersizx+sqsiz/2+x, (j+1)*sqsiz+spacersizy+sqsiz/2+y);
                         }
                         else{
-                            g.drawImage(img, i*sqsiz+spacersizx+x, height-((j+1)*sqsiz+spacersizy)+y, sqsiz,sqsiz, null);
+                            g.drawImage(img, i*sqsiz+spacersizx+x, j*sqsiz+spacersizy+y, sqsiz,sqsiz, null);
                         }
                     }
                 }
