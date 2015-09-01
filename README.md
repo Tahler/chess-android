@@ -4,7 +4,7 @@ A port of the other chess repository to android
 ## TODO
 1. Implement en passant
 2. View
-  1. ChessBoardView
+  1. ChessBoardView (See [view branch](https://github.com/Tahler/chess-android/tree/view))
     1. displayBoard(Piece[][]) is not called correctly 
     2. Highlight moves
     3. Better image scaling (it's kinda grainy)
