@@ -41,7 +41,6 @@ public class ChessBoardView extends SurfaceView implements View, android.view.Vi
                 Log.d("TILE_SIZE", String.valueOf(tileSize));
 
                 paint = new Paint();
-
                 draw();
             }
 
@@ -207,6 +206,7 @@ public class ChessBoardView extends SurfaceView implements View, android.view.Vi
                 tile.y * tileSize + tileSize
             ), paint);
 
+        paint.setAlpha(100);
         paint.setColor(color);
         int padding = 2;
         canvas.drawRect(new Rect(
@@ -215,6 +215,7 @@ public class ChessBoardView extends SurfaceView implements View, android.view.Vi
                 tile.x * tileSize + tileSize - padding,
                 tile.y * tileSize + tileSize - padding
             ), paint);
+        paint.setAlpha(255);
     }
 
     @Override
