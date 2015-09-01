@@ -1,9 +1,17 @@
 package edu.neumont.pro180.chess.core.controller;
 
+import android.app.ActionBar;
 import android.app.Activity;
+import android.graphics.Point;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.Display;
+import android.view.Gravity;
+import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 
 import edu.neumont.pro180.chess.R;
+import edu.neumont.pro180.chess.core.view.ChessBoardView;
 
 /**
  * Simply wraps the Controller in an activity, so that it may run on Android.
@@ -13,8 +21,19 @@ public class ChessActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chess);
-
+        resizeBoard();
 //        Controller controller = new Controller((View) findViewById(R.id.chess_board_view));
 //        controller.play();
+    }
+
+    private void resizeBoard() {
+        Display display = getWindowManager().getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        ChessBoardView board = (ChessBoardView) findViewById(R.id.chess_board_view);
+        ViewGroup.LayoutParams params = board.getLayoutParams();
+        params.height = size.x;
+        params.width = size.x;
+        board.setLayoutParams(params);
     }
 }
