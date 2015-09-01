@@ -104,7 +104,7 @@ public class Controller implements View.Listener {
 
     @Override
     public void moveSelected(Move move) {
-        System.out.println("View made a move");
+        System.out.println("View sent a move");
 
         // If the move is valid
         if (validator.getAllValidMoves(move.getStart()).contains(move)) {
