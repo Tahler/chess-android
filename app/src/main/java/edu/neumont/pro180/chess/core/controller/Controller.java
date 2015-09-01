@@ -31,6 +31,7 @@ public class Controller implements View.Listener {
 
     public void play() {
         do {
+            view.displayBoard(board.getPieces());
             Move move;
             try {
                 move = view.readMove();

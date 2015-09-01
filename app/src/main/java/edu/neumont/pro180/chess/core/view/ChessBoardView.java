@@ -51,6 +51,7 @@ public class ChessBoardView extends SurfaceView implements View, android.view.Vi
 
     @Override
     protected void onDraw(Canvas canvas) {
+        Log.d("DRAW", "DRAW");
         canvas.drawColor(Color.BLACK);
 
         tileSize = (float) (getWidth() / 8.0);
@@ -79,8 +80,36 @@ public class ChessBoardView extends SurfaceView implements View, android.view.Vi
     }
 
     private Bitmap getPieceBitMap(Piece piece) {
-        switch (piece.getType()) {
-
+        if (piece.getColor().equals(edu.neumont.pro180.chess.core.model.Color.LIGHT)) {
+            switch (piece.getType()) {
+                case PAWN:
+                    return BitmapFactory.decodeResource(getResources(), R.drawable.pl);
+                case ROOK:
+                    return BitmapFactory.decodeResource(getResources(), R.drawable.rl);
+                case KNIGHT:
+                    return BitmapFactory.decodeResource(getResources(), R.drawable.nl);
+                case BISHOP:
+                    return BitmapFactory.decodeResource(getResources(), R.drawable.bl);
+                case QUEEN:
+                    return BitmapFactory.decodeResource(getResources(), R.drawable.ql);
+                case KING:
+                    return BitmapFactory.decodeResource(getResources(), R.drawable.kl);
+            }
+        } else {
+            switch (piece.getType()) {
+                case PAWN:
+                    return BitmapFactory.decodeResource(getResources(), R.drawable.pd);
+                case ROOK:
+                    return BitmapFactory.decodeResource(getResources(), R.drawable.rd);
+                case KNIGHT:
+                    return BitmapFactory.decodeResource(getResources(), R.drawable.nd);
+                case BISHOP:
+                    return BitmapFactory.decodeResource(getResources(), R.drawable.bd);
+                case QUEEN:
+                    return BitmapFactory.decodeResource(getResources(), R.drawable.qd);
+                case KING:
+                    return BitmapFactory.decodeResource(getResources(), R.drawable.kd);
+            }
         }
         return null;
     }
