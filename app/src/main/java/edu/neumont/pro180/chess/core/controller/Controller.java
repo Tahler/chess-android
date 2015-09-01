@@ -1,7 +1,5 @@
 package edu.neumont.pro180.chess.core.controller;
 
-import android.util.Log;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,7 +30,6 @@ public class Controller implements View.Listener {
 
     // Control flow
     public void play() {
-        view.displayBoard(board.getPieces());
         do {
             Move move = view.readMove();
             // If the move is valid
@@ -58,7 +55,7 @@ public class Controller implements View.Listener {
         } while (!validator.isOver());
     }
 
-// _OLD_
+
 //    public void play() {
 //        do {
 //            Move move;
@@ -94,18 +91,44 @@ public class Controller implements View.Listener {
     @Override
     public void tileSelected(Tile tile) {
         if (tile != null) {
-            Log.d("TileSelected", tile.x + ", " + tile.y);
+            System.out.println(tile.x + ", " + tile.y);
 
             List<Move> validMovesAtTile = validator.getAllValidMoves(tile);
 
+            // Send the move destinations to the view
             List<Tile> ends = new ArrayList<>();
-            for (Move m : validMovesAtTile) {
-                Log.d("Move", m.toString());
-                ends.add(m.getEnd());
-            }
-
-//            view.displayBoard(board.getPieces());
+            for (Move m : validMovesAtTile) ends.add(m.getEnd());
             view.highlightTiles(tile, ends);
         }
+    }
+
+    @Override
+    public void moveSelected(Move move) {
+        System.out.println("View made a move");
+
+        // If the move is valid
+        if (validator.getAllValidMoves(move.getStart()).contains(move)) {
+            board.makeMove(move);
+        } else {
+            System.out.println();
+            return; // retry until a valid move is made
+        }
+
+        // Pawn promotion
+        boolean piecePromotion = false;
+        Piece mover = board.getPieceAt(move.getEnd()); // The piece has already moved, so it is in its ending spot
+        if (mover.getType().equals(Piece.Type.PAWN)) {
+            if (mover.getColor().equals(Color.LIGHT)) {
+                if (move.getEnd().y == 0) piecePromotion = true;
+            } else {
+                if (move.getEnd().y == 7) piecePromotion = true;
+            }
+        }
+        if (piecePromotion) mover.setType(view.getPawnPromotion());
+
+        // Send the new Piece[][] to the view
+        view.displayBoard(board.getPieces());
+
+//        if (validator.isOver()) // End the game
     }
 }

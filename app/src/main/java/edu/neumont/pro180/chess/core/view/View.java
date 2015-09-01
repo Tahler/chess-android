@@ -16,5 +16,6 @@ public interface View {
     void setListener(Listener listener);
     interface Listener {
         void tileSelected(Tile tile);
+        void moveSelected(Move move);
     }
 }
