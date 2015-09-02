@@ -64,7 +64,14 @@ public class SwingView extends JFrame implements View{
                 addMouseListener(new MouseListener(){
                     public void mouseClicked(MouseEvent arg0) {
                     	if(listener!=null){
-                    		listener.tileSelected(getloc(arg0.getX(), arg0.getY()));
+                    		if(movef!=null){
+                                listener.moveSelected(new Move(movef, getloc(arg0.getX(), arg0.getY())));
+                                avails.clear();
+                                movef = null;
+                    		}
+                    		else{
+                    			listener.tileSelected(getloc(arg0.getX(), arg0.getY()));
+                    		}
                     	}
                     	/*
 //                        if(mode==Model.MODE.PLAY){
@@ -253,8 +260,7 @@ public class SwingView extends JFrame implements View{
 
 	@Override
 	public void notifyCheck() {
-		// TODO Auto-generated method stub
-
+		JOptionPane.showMessageDialog(this, "Check");
 	}
 	@Override
 	public Move readMove() {
@@ -299,10 +305,15 @@ public class SwingView extends JFrame implements View{
 	public void setListener(Listener listener) {
 		this.listener = listener;
 	}
+	@Override
+	public void notifyGameOver(edu.neumont.pro180.chess.core.model.Color result) {
+		JOptionPane.showMessageDialog(this, "Game Over");
+		
+	}
 
     public static void main(String[] args){
     	Controller cont = new Controller(new SwingView());
-    	cont.play();
     }
+
 
 }
