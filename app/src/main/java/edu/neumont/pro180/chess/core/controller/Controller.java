@@ -50,6 +50,7 @@ public class Controller implements View.Listener {
         // The move is already practically valid through the view. Consider removing this if statement
         if (validator.getAllValidMoves(move.getStart()).contains(move)) {
             board.makeMove(move);
+            view.notifyturn(board.getCurrentTurnColor());
         } else {
             System.err.println("Something very weird happened - the move was invalid");
             return; // retry until a valid move is made
