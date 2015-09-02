@@ -22,23 +22,27 @@ public class multiView implements View{
 	
 	@Override
 	public void displayBoard(Piece[][] pieces) {
-		// TODO Auto-generated method stub
-		
+		for(View v : views){
+			v.displayBoard(pieces);
+		}
 	}
 	@Override
 	public void notifyCheck() {
-		// TODO Auto-generated method stub
-		
+		for(View v : views){
+			v.notifyCheck();
+		}
 	}
 	@Override
 	public void notifyGameOver(Color result) {
-		// TODO Auto-generated method stub
-		
+		for(View v : views){
+			v.notifyGameOver(result);
+		}
 	}
 	@Override
 	public void highlightTiles(Tile start, List<Tile> ends) {
-		// TODO Auto-generated method stub
-		
+		for(View v : views){
+			v.highlightTiles(start, ends);
+		}
 	}
 	@Override
 	public Move readMove() {
@@ -52,8 +56,9 @@ public class multiView implements View{
 	}
 	@Override
 	public void setListener(Listener listener) {
-		// TODO Auto-generated method stub
-		
+		for(View v : views){
+			v.setListener(listener);
+		}
 	}
 
 }

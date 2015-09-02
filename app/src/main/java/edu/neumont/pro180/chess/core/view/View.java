@@ -20,6 +20,8 @@ public interface View {
 
     void highlightTiles(Tile start, List<Tile> ends);
 
+    void notifyturn(Color turn);
+    
     Move readMove();
 
     Piece.Type getPawnPromotion();
