@@ -11,13 +11,13 @@ import edu.neumont.pro180.chess.core.model.Tile;
 
 public class multiView implements View{
 	private final List<View> views;
+	private int current;
 	
 	public multiView(View...views){
 		this.views = new ArrayList<View>();
 		for(View v : views){
 			this.views.add(v);
 		}
-		
 	}
 	
 	@Override
@@ -46,18 +46,31 @@ public class multiView implements View{
 	}
 	@Override
 	public Move readMove() {
-		// TODO Auto-generated method stub
+		if(views.size()>current){
+			return views.get(current).readMove();
+		}
 		return null;
 	}
 	@Override
 	public Type getPawnPromotion() {
-		// TODO Auto-generated method stub
+		if(views.size()>current){
+			return views.get(current).getPawnPromotion();
+		}
 		return null;
 	}
 	@Override
 	public void setListener(Listener listener) {
 		for(View v : views){
 			v.setListener(listener);
+		}
+	}
+	@Override
+	public void notifyturn(Color turn) {
+		if(turn.equals(Color.LIGHT)){
+			current = 0;
+		}
+		else{
+			current = 1;
 		}
 	}
 
