@@ -40,8 +40,8 @@ public class multiView implements View{
 	}
 	@Override
 	public void highlightTiles(Tile start, List<Tile> ends) {
-		for(View v : views){
-			v.highlightTiles(start, ends);
+		if(views.size()>current){
+			views.get(current).highlightTiles(start, ends);
 		}
 	}
 	@Override
