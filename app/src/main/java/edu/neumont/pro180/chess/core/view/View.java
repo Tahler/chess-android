@@ -21,8 +21,6 @@ public interface View {
 
     void highlightTiles(Tile start, List<Tile> ends);
 
-    Move readMove();
-
     Piece.Type getPawnPromotion();
 
     void setListener(Listener listener);

@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
     
-    <edu.neumont.pro180.chess.core.view.CapturedPieceView
+    <edu.neumont.pro180.chess.core.view.PlayerView
         android:id="@+id/captured_light"
         android:layout_width="0dp"
         android:layout_height="fill_parent"
@@ -20,7 +20,7 @@
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true" />
     
-    <edu.neumont.pro180.chess.core.view.CapturedPieceView
+    <edu.neumont.pro180.chess.core.view.PlayerView
         android:id="@+id/captured_dark"
         android:layout_width="0dp"
         android:layout_height="fill_parent"

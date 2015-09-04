@@ -8,7 +8,7 @@ import android.view.ViewGroup;
 
 import edu.neumont.pro180.chess.R;
 import edu.neumont.pro180.chess.core.model.Color;
-import edu.neumont.pro180.chess.core.view.CapturedPieceView;
+import edu.neumont.pro180.chess.core.view.PlayerView;
 import edu.neumont.pro180.chess.core.view.ChessBoardView;
 import edu.neumont.pro180.chess.core.view.View;
 
@@ -36,17 +36,17 @@ public class ChessActivity extends Activity {
         params.height = size.x;
         params.width = size.x;
 
-        CapturedPieceView dark = (CapturedPieceView) findViewById(R.id.captured_dark);
-        dark.setC(Color.LIGHT);
-        ViewGroup.LayoutParams captureDark = dark.getLayoutParams();
-        captureDark.width = size.x;
-
-        CapturedPieceView light = (CapturedPieceView) findViewById(R.id.captured_light);
+        PlayerView light = (PlayerView) findViewById(R.id.captured_light);
         light.setC(Color.DARK);
         ViewGroup.LayoutParams captureLight = light.getLayoutParams();
         captureLight.width = size.x;
 
-        board.addCapturedPieceView(dark);
-        board.addCapturedPieceView(light);
+        PlayerView dark = (PlayerView) findViewById(R.id.captured_dark);
+        dark.setC(Color.LIGHT);
+        ViewGroup.LayoutParams captureDark = dark.getLayoutParams();
+        captureDark.width = size.x;
+
+        board.setLightPlayerView(light);
+        board.setDarkPlayerView(dark);
     }
 }
