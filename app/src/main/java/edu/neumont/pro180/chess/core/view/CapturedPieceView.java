@@ -11,6 +11,7 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import edu.neumont.pro180.chess.R;
 import edu.neumont.pro180.chess.core.model.Piece;
@@ -18,12 +19,13 @@ import edu.neumont.pro180.chess.core.model.Piece;
 public class CapturedPieceView extends SurfaceView {
     private SurfaceHolder holder;
     private static int displaySize;
-    private ArrayList<Piece> capturedPieces = new ArrayList<>();
+    private List<Piece> capturedPieces;
     private Paint paint;
     private edu.neumont.pro180.chess.core.model.Color c;
 
     public CapturedPieceView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        capturedPieces = new ArrayList<>();
         holder = getHolder();
 
         holder.addCallback(new SurfaceHolder.Callback() {
@@ -32,8 +34,8 @@ public class CapturedPieceView extends SurfaceView {
                 Canvas canvas = holder.lockCanvas(null);
                 displaySize = (int) (getWidth() / 8.0 * 0.60D);
                 paint = new Paint();
-                onDraw(canvas);
                 holder.unlockCanvasAndPost(canvas);
+                draw();
             }
 
             @Override
@@ -116,7 +118,7 @@ public class CapturedPieceView extends SurfaceView {
         this.c = c;
     }
 
-    public void setCapturedPieces(ArrayList<Piece> capturedPieces) {
+    public void setCapturedPieces(List<Piece> capturedPieces) {
         this.capturedPieces = capturedPieces;
         draw();
     }

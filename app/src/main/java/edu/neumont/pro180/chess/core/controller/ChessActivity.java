@@ -35,17 +35,17 @@ public class ChessActivity extends Activity {
         ViewGroup.LayoutParams params = board.getLayoutParams();
         params.height = size.x;
         params.width = size.x;
-        board.setLayoutParams(params);
+
         CapturedPieceView dark = (CapturedPieceView) findViewById(R.id.captured_dark);
-        dark.setC(Color.DARK);
-        CapturedPieceView light = (CapturedPieceView) findViewById(R.id.captured_light);
-        light.setC(Color.LIGHT);
+        dark.setC(Color.LIGHT);
         ViewGroup.LayoutParams captureDark = dark.getLayoutParams();
-        ViewGroup.LayoutParams captureLight = light.getLayoutParams();
         captureDark.width = size.x;
-        //captureDark.height = size.x/4;
+
+        CapturedPieceView light = (CapturedPieceView) findViewById(R.id.captured_light);
+        light.setC(Color.DARK);
+        ViewGroup.LayoutParams captureLight = light.getLayoutParams();
         captureLight.width = size.x;
-        //captureLight.height = size.x/4;
+
         board.addCapturedPieceView(dark);
         board.addCapturedPieceView(light);
     }

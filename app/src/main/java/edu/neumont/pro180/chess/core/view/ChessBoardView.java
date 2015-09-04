@@ -31,11 +31,13 @@ public class ChessBoardView extends SurfaceView implements View, android.view.Vi
     private static int tileSize;
     private ArrayList<CapturedPieceView> capturedPieceViews = new ArrayList<>();
     private Piece[][] pieces; // cached, set from the controller call
+    private List<Piece> capturedPieces; //cached, set from the controller call
     private Tile selectedTile; // Colored in blue
     private List<Tile> highlightedTiles; // Colored in yellow
 
     public ChessBoardView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        capturedPieces = new ArrayList<>();
         holder = getHolder();
         holder.addCallback(new SurfaceHolder.Callback() {
             @Override
@@ -159,11 +161,12 @@ public class ChessBoardView extends SurfaceView implements View, android.view.Vi
         Piece[][] pieces = board.getPieces();
         Log.d("displayBoard()", "Received new Piece[][] set");
         this.pieces = pieces;
-        updateCapturedPieceViews(board.getCapturedPieces());
+        capturedPieces = board.getCapturedPieces();
+        updateCapturedPieceViews(capturedPieces);
         draw();
     }
 
-    private void updateCapturedPieceViews(ArrayList<Piece> capturedPieces) {
+    private void updateCapturedPieceViews(List<Piece> capturedPieces) {
         for (CapturedPieceView v : capturedPieceViews) {
             v.setCapturedPieces(capturedPieces);
         }
@@ -354,4 +357,5 @@ public class ChessBoardView extends SurfaceView implements View, android.view.Vi
     public void addCapturedPieceView(CapturedPieceView capturedPieceView) {
         capturedPieceViews.add(capturedPieceView);
     }
+
 }
