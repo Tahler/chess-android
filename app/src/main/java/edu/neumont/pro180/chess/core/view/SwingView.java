@@ -20,6 +20,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import edu.neumont.pro180.chess.core.controller.Controller;
+import edu.neumont.pro180.chess.core.model.Board;
 import edu.neumont.pro180.chess.core.model.Move;
 import edu.neumont.pro180.chess.core.model.Piece;
 import edu.neumont.pro180.chess.core.model.Tile;
@@ -30,7 +31,7 @@ import edu.neumont.pro180.chess.core.view.View;
  */
 public class SwingView extends JFrame implements View{
     private static final long serialVersionUID = 1L;
-    Piece[][] lastboard;
+    Board lastboard;
     int mousex;
     int mousey;
     Tile mouse;
@@ -63,7 +64,6 @@ public class SwingView extends JFrame implements View{
                     }});
                 addMouseListener(new MouseListener(){
                     public void mouseClicked(MouseEvent arg0) {
-<<<<<<< HEAD
                     	if(listener!=null){
                     		Tile clickmove = getloc(arg0.getX(), arg0.getY());
                     		if(movef!=null && avails.contains(clickmove)){
@@ -75,7 +75,6 @@ public class SwingView extends JFrame implements View{
                     			listener.tileSelected(clickmove);
                     		}
                     	}
-=======
                         if(listener!=null){
                             if(movef!=null){
                                 listener.moveSelected(new Move(movef, getloc(arg0.getX(), arg0.getY())));
@@ -86,7 +85,6 @@ public class SwingView extends JFrame implements View{
                                 listener.tileSelected(getloc(arg0.getX(), arg0.getY()));
                             }
                         }
->>>>>>> master
                     	/*
 //                        if(mode==Model.MODE.PLAY){
                             if(movef==null){
@@ -197,8 +195,8 @@ public class SwingView extends JFrame implements View{
         }
         return '-';
     }
-    public void drawBoard(Piece[][] board, Graphics g, int x,int y, int width,int height, boolean headers) {
-        if (board != null) {
+    public void drawBoard(Board lastboard, Graphics g, int x,int y, int width,int height, boolean headers) {
+        if (lastboard != null) {
             int headsiz = headers ? (Math.max(g.getFontMetrics().getHeight(), g.getFontMetrics().charWidth('M')) + 2) : 0;
             int tmpsiz = (width - headsiz * 2) / 8;
             int sqsiz = (height - headsiz * 2) / 8;
@@ -250,7 +248,7 @@ public class SwingView extends JFrame implements View{
                         g.setColor(new Color(0,0,0));
                         g.fillRect(i*sqsiz+spacersizx+x, j*sqsiz+spacersizy+y, sqsiz, sqsiz);
                     }
-                    Piece piece = board[thisloc.y][thisloc.x];
+                    Piece piece = lastboard.getPieceAt(thisloc);
                     if(piece!=null){
                         Image img = imgs.get(piece.toCharTeam());
                         if(img==null){
@@ -277,15 +275,6 @@ public class SwingView extends JFrame implements View{
         JOptionPane.showMessageDialog(this, "Check");
     }
     @Override
-    public Move readMove() {
-        do{
-            if(newcmd!=null) {
-                return newcmd;
-            }
-            Thread.yield();
-        }while(true);
-    }
-    @Override
     public Piece.Type getPawnPromotion() {
         String resp = (String) JOptionPane.showInputDialog(this, "What would you like to promote your pawn to?", "Pawn Promotion", JOptionPane.QUESTION_MESSAGE, null, new String[]{"Queen","Bishop","Knight","Rook"}, null);
         if(resp!=null && resp.length()>0){
@@ -303,10 +292,9 @@ public class SwingView extends JFrame implements View{
             }
         }
         return null;
-<<<<<<< HEAD
 	}
 	@Override
-	public void displayBoard(Piece[][] pieces) {
+	public void displayBoard(Board pieces) {
 		lastboard = pieces;
 		repaint();
 	}
@@ -324,46 +312,10 @@ public class SwingView extends JFrame implements View{
 	public void notifyGameOver(edu.neumont.pro180.chess.core.model.Color result) {
 		JOptionPane.showMessageDialog(this, "Game Over");
 	}
-	@Override
-	public void notifyturn(edu.neumont.pro180.chess.core.model.Color turn) {
-		// TODO Auto-generated method stub
-		
-	}
+	
 
     public static void main(String[] args){
     	Controller cont = new Controller(new multiView(new SwingView(), new SwingView(), new SwingView()));
     }
 
-
-
 }
-=======
-    }
-    @Override
-    public void displayBoard(Piece[][] pieces) {
-        lastboard = pieces;
-        repaint();
-    }
-    @Override
-    public void highlightTiles(Tile start, List<Tile> ends) {
-        movef = start;
-        avails = ends;
-        repaint();
-    }
-    @Override
-    public void setListener(Listener listener) {
-        this.listener = listener;
-    }
-    @Override
-    public void notifyGameOver(edu.neumont.pro180.chess.core.model.Color result) {
-        JOptionPane.showMessageDialog(this, "Game Over");
-
-    }
-
-    public static void main(String[] args){
-        Controller cont = new Controller(new SwingView());
-    }
-
-
-}
->>>>>>> master

@@ -3,10 +3,9 @@ package edu.neumont.pro180.chess.core.view;
 import java.util.ArrayList;
 import java.util.List;
 
-import edu.neumont.pro180.chess.core.controller.Controller;
+import edu.neumont.pro180.chess.core.model.Board;
 import edu.neumont.pro180.chess.core.model.Color;
 import edu.neumont.pro180.chess.core.model.Move;
-import edu.neumont.pro180.chess.core.model.Piece;
 import edu.neumont.pro180.chess.core.model.Piece.Type;
 import edu.neumont.pro180.chess.core.model.Tile;
 
@@ -76,7 +75,7 @@ public class multiView implements View{
 	}
 	
 	@Override
-	public void displayBoard(Piece[][] pieces) {
+	public void displayBoard(Board pieces) {
 		for(View v : views){
 			v.displayBoard(pieces);
 		}
@@ -100,13 +99,6 @@ public class multiView implements View{
 		}
 	}
 	@Override
-	public Move readMove() {
-		if(views.size()>current){
-			return views.get(current).readMove();
-		}
-		return null;
-	}
-	@Override
 	public Type getPawnPromotion() {
 		if(views.size()>current){
 			return views.get(current).getPawnPromotion();
@@ -126,15 +118,6 @@ public class multiView implements View{
 			else{
 				views.get(i).setListener(viewscatcher);
 			}
-		}
-	}
-	@Override
-	public void notifyturn(Color turn) {
-		if(turn.equals(Color.LIGHT)){
-			current = 0;
-		}
-		else{
-			current = 1;
 		}
 	}
 

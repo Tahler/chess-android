@@ -10,22 +10,22 @@ import edu.neumont.pro180.chess.core.model.Tile;
 
 public interface View {
 
-    void displayBoard(Board board);
+    public void displayBoard(Board board);
 
-    void notifyCheck();
+    public void notifyCheck();
 
     /**
      * @param result The color of the winner, or null if the game resulted as a stalemate
      */
-    void notifyGameOver(Color result);
+    public void notifyGameOver(Color result);
 
-    void highlightTiles(Tile start, List<Tile> ends);
+    public void highlightTiles(Tile start, List<Tile> ends);
 
-    Piece.Type getPawnPromotion();
+    public Piece.Type getPawnPromotion();
 
-    void setListener(Listener listener);
+    public void setListener(Listener listener);
 
-    interface Listener {
+    public static interface Listener {
         void tileSelected(Tile tile);
         void moveSelected(Move move);
     }
