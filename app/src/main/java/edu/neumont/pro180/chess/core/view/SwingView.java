@@ -308,7 +308,7 @@ public class SwingView extends JFrame implements View{
 	@Override
 	public void notifyGameOver(edu.neumont.pro180.chess.core.model.Color result) {
 		JOptionPane.showMessageDialog(this, "Game Over");
-		
+
 	}
 
     public static void main(String[] args){
