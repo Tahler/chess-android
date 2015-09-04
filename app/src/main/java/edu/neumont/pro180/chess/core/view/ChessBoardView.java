@@ -23,6 +23,9 @@ import edu.neumont.pro180.chess.core.model.Move;
 import edu.neumont.pro180.chess.core.model.Piece;
 import edu.neumont.pro180.chess.core.model.Tile;
 
+/**
+ * Extends SurfaceView, which allows for canvas drawing and makes this Android specific
+ */
 public class ChessBoardView extends SurfaceView implements View, android.view.View.OnTouchListener {
     // For talking to the controller
     private View.Listener listener;

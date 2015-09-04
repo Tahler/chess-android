@@ -21,7 +21,6 @@ public class PlayerView extends SurfaceView {
     private static int displaySize;
     private List<Piece> capturedPieces;
     private Paint paint;
-    private edu.neumont.pro180.chess.core.model.Color c;
 
     public PlayerView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -63,16 +62,14 @@ public class PlayerView extends SurfaceView {
         int y = 0;
         int overflow = (getRootView().getWidth() / displaySize) - 1;
         for (Piece p : capturedPieces) {
-            if (p.getColor() == c) {
-                if (count > overflow) {
-                    y += displaySize;
-                    count = 0;
-                }
-                Bitmap unscaled = getPieceBitMap(p);
-                Bitmap scaled = Bitmap.createScaledBitmap(unscaled, displaySize, displaySize, false);
-                canvas.drawBitmap(scaled, count * displaySize, y, paint);
-                count++;
+            if (count > overflow) {
+                y += displaySize;
+                count = 0;
             }
+            Bitmap unscaled = getPieceBitMap(p);
+            Bitmap scaled = Bitmap.createScaledBitmap(unscaled, displaySize, displaySize, false);
+            canvas.drawBitmap(scaled, count * displaySize, y, paint);
+            count++;
         }
     }
 
@@ -112,10 +109,6 @@ public class PlayerView extends SurfaceView {
             }
         }
         return null;
-    }
-
-    public void setC(edu.neumont.pro180.chess.core.model.Color c) {
-        this.c = c;
     }
 
     public void setCapturedPieces(List<Piece> capturedPieces) {
