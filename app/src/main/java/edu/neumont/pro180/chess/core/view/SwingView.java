@@ -64,13 +64,14 @@ public class SwingView extends JFrame implements View{
                 addMouseListener(new MouseListener(){
                     public void mouseClicked(MouseEvent arg0) {
                     	if(listener!=null){
-                    		if(movef!=null){
-                                listener.moveSelected(new Move(movef, getloc(arg0.getX(), arg0.getY())));
+                    		Tile clickmove = getloc(arg0.getX(), arg0.getY());
+                    		if(movef!=null && avails.contains(clickmove)){
+                                listener.moveSelected(new Move(movef, clickmove));
                                 avails.clear();
                                 movef = null;
                     		}
                     		else{
-                    			listener.tileSelected(getloc(arg0.getX(), arg0.getY()));
+                    			listener.tileSelected(clickmove);
                     		}
                     	}
                     	/*
