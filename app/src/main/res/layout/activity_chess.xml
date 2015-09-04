@@ -4,12 +4,28 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-
+    
+    <edu.neumont.pro180.chess.core.view.CapturedPieceView
+        android:id="@+id/captured_light"
+        android:layout_width="0dp"
+        android:layout_height="fill_parent"
+        android:layout_below="@+id/chess_board_view"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+    
     <edu.neumont.pro180.chess.core.view.ChessBoardView
         android:id="@+id/chess_board_view"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true" />
+    
+    <edu.neumont.pro180.chess.core.view.CapturedPieceView
+        android:id="@+id/captured_dark"
+        android:layout_width="0dp"
+        android:layout_height="fill_parent"
+        android:layout_above="@+id/chess_board_view"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
 
 </RelativeLayout>

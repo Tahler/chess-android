@@ -15,9 +15,11 @@ import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import edu.neumont.pro180.chess.R;
+import edu.neumont.pro180.chess.core.model.Board;
 import edu.neumont.pro180.chess.core.model.Move;
 import edu.neumont.pro180.chess.core.model.Piece;
 import edu.neumont.pro180.chess.core.model.Tile;
@@ -27,6 +29,7 @@ public class ChessBoardView extends SurfaceView implements View, android.view.Vi
     private SurfaceHolder holder;
     private Paint paint;
     private static int tileSize;
+    private ArrayList<CapturedPieceView> capturedPieceViews = new ArrayList<>();
     private Piece[][] pieces; // cached, set from the controller call
     private Tile selectedTile; // Colored in blue
     private List<Tile> highlightedTiles; // Colored in yellow
@@ -53,16 +56,6 @@ public class ChessBoardView extends SurfaceView implements View, android.view.Vi
         setOnTouchListener(this);
     }
 
-    /**
-     * Calls draw with the SurfaceHolder's canvas
-     */
-    private void draw() {
-        Canvas canvas = holder.lockCanvas();
-        if (canvas != null) {
-            draw(canvas);
-            holder.unlockCanvasAndPost(canvas);
-        }
-    }
     @Override
     public void draw(Canvas canvas) {
         if (canvas == null) {
@@ -76,6 +69,7 @@ public class ChessBoardView extends SurfaceView implements View, android.view.Vi
         drawHighlights(canvas);
         drawPieces(canvas);
     }
+
     private void drawTiles(Canvas canvas) {
         for (int i = 0; i < 8; i++) { // horizontal
             for (int j = 0; j < 8; j++) { // vertical
@@ -90,31 +84,13 @@ public class ChessBoardView extends SurfaceView implements View, android.view.Vi
         }
     }
     private void drawHighlights(Canvas canvas) {
-        if (selectedTile != null) drawHighlight(selectedTile, Color.BLUE, canvas);
+        if (selectedTile != null) highlightTile(selectedTile, Color.BLUE, canvas);
         if (highlightedTiles != null) {
             for (Tile end : highlightedTiles) {
-                drawHighlight(end, Color.YELLOW, canvas);
+                highlightTile(end, Color.YELLOW, canvas);
             }
             // TODO captures in red? might look dumb
         }
-    }
-    private void drawHighlight(Tile tile, int color, Canvas canvas) {
-        paint.setColor(Color.BLACK);
-        canvas.drawRect(new Rect(
-                tile.x * tileSize,
-                tile.y * tileSize,
-                tile.x * tileSize + tileSize,
-                tile.y * tileSize + tileSize
-        ), paint);
-
-        paint.setColor(color);
-        int borderWidth = 2;
-        canvas.drawRect(new Rect(
-                tile.x * tileSize + borderWidth,
-                tile.y * tileSize + borderWidth,
-                tile.x * tileSize + tileSize - borderWidth,
-                tile.y * tileSize + tileSize - borderWidth
-        ), paint);
     }
     private void drawPieces(Canvas canvas) {
         for (int i = 0; i < 8; i++) {
@@ -135,6 +111,7 @@ public class ChessBoardView extends SurfaceView implements View, android.view.Vi
             }
         }
     }
+
     /**
      * @return An immutable Bitmap representing the piece
      */
@@ -175,13 +152,33 @@ public class ChessBoardView extends SurfaceView implements View, android.view.Vi
 
     /**
      * Sets the pieces to be later drawn in the next possible display
-     * @param pieces The updated Piece[][] from the board
+     * @param board The updated board
      */
     @Override
-    public void displayBoard(Piece[][] pieces) {
+    public void displayBoard(Board board) {
+        Piece[][] pieces = board.getPieces();
         Log.d("displayBoard()", "Received new Piece[][] set");
         this.pieces = pieces;
+        updateCapturedPieceViews(board.getCapturedPieces());
         draw();
+    }
+
+    private void updateCapturedPieceViews(ArrayList<Piece> capturedPieces) {
+        for (CapturedPieceView v : capturedPieceViews) {
+            v.setCapturedPieces(capturedPieces);
+        }
+    }
+
+
+    /**
+     * Calls draw with the SurfaceHolder's canvas
+     */
+    private void draw() {
+        Canvas canvas = holder.lockCanvas();
+        if (canvas != null) {
+            draw(canvas);
+            holder.unlockCanvasAndPost(canvas);
+        }
     }
 
     @Override
@@ -204,14 +201,38 @@ public class ChessBoardView extends SurfaceView implements View, android.view.Vi
     @Override
     public void highlightTiles(Tile start, List<Tile> ends) {
         Canvas canvas = holder.lockCanvas();
+        // Set the tiles to be highlighted
+        selectedTile = start;
         highlightedTiles = ends;
         draw(canvas);
         holder.unlockCanvasAndPost(canvas);
     }
-    private void resetHighlights() {
-        selectedTile = null;
-        highlightedTiles.clear();
-        draw();
+    /**
+     * Redirected to highlightTile(Tile, int, Canvas) with the canvas argument as the
+     * SurfaceHolder's locked canvas. holder.unlockCanvasAndPost(canvas) is called at the end.
+     */
+    public void highlightTile(Tile tile, int color) {
+        Canvas canvas = holder.lockCanvas();
+        highlightTile(tile, color, canvas);
+        holder.unlockCanvasAndPost(canvas);
+    }
+    public void highlightTile(Tile tile, int color, Canvas canvas) {
+        paint.setColor(Color.BLACK);
+        canvas.drawRect(new Rect(
+                tile.x * tileSize,
+                tile.y * tileSize,
+                tile.x * tileSize + tileSize,
+                tile.y * tileSize + tileSize
+        ), paint);
+
+        paint.setColor(color);
+        int borderWidth = 2;
+        canvas.drawRect(new Rect(
+                tile.x * tileSize + borderWidth,
+                tile.y * tileSize + borderWidth,
+                tile.x * tileSize + tileSize - borderWidth,
+                tile.y * tileSize + tileSize - borderWidth
+        ), paint);
     }
 
     @Override
@@ -287,25 +308,28 @@ public class ChessBoardView extends SurfaceView implements View, android.view.Vi
         }
     }
 
+    @Override
+    public void setListener(Listener listener) {
+        this.listener = listener;
+    }
+
     private Tile from;
     private Tile to;
     @Override
     public boolean onTouch(android.view.View v, MotionEvent event) {
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
-            selectedTile = getTileAt(event.getX(), event.getY());
+            Tile selected = getTileAt(event.getX(), event.getY());
 
-            if (selectedTile.equals(from)) {
-                resetHighlights();
-                from = null;
-            } else if (highlightedTiles == null || !highlightedTiles.contains(selectedTile)) { // First touch (selecting the piece to move)
+            if (highlightedTiles == null || !highlightedTiles.contains(selected)) { // First touch (selecting the piece to move)
                 from = getTileAt(event.getX(), event.getY());
                 listener.tileSelected(from);
             } else { // Second touch (selecting the destination)
-                to = selectedTile;
-                resetHighlights();
+                to = getTileAt(event.getX(), event.getY());
+                // Reset the highlights
+                selectedTile = null;
+                highlightedTiles.clear();
                 // Send the move to the controller
                 listener.moveSelected(new Move(from, to));
-                from = null;
             }
 
             // Return true because the touch has been handled
@@ -322,14 +346,12 @@ public class ChessBoardView extends SurfaceView implements View, android.view.Vi
         try {
             return new Tile(tileX, tileY);
         } catch (IndexOutOfBoundsException e) {
-            System.err.println("Touched outside chess board");
+            Log.e("", "Touched outside chess board");
             return null;
         }
     }
 
-    @Override
-    public void setListener(Listener listener) {
-        this.listener = listener;
+    public void addCapturedPieceView(CapturedPieceView capturedPieceView) {
+        capturedPieceViews.add(capturedPieceView);
     }
-
 }

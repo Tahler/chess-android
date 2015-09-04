@@ -29,8 +29,8 @@ import edu.neumont.pro180.chess.core.view.View;
  * Created by Trevan on 8/31/2015.
  */
 public class SwingView extends JFrame implements View{
-	private static final long serialVersionUID = 1L;
-	Piece[][] lastboard;
+    private static final long serialVersionUID = 1L;
+    Piece[][] lastboard;
     int mousex;
     int mousey;
     Tile mouse;
@@ -63,16 +63,16 @@ public class SwingView extends JFrame implements View{
                     }});
                 addMouseListener(new MouseListener(){
                     public void mouseClicked(MouseEvent arg0) {
-                    	if(listener!=null){
-                    		if(movef!=null){
+                        if(listener!=null){
+                            if(movef!=null){
                                 listener.moveSelected(new Move(movef, getloc(arg0.getX(), arg0.getY())));
                                 avails.clear();
                                 movef = null;
-                    		}
-                    		else{
-                    			listener.tileSelected(getloc(arg0.getX(), arg0.getY()));
-                    		}
-                    	}
+                            }
+                            else{
+                                listener.tileSelected(getloc(arg0.getX(), arg0.getY()));
+                            }
+                        }
                     	/*
 //                        if(mode==Model.MODE.PLAY){
                             if(movef==null){
@@ -130,58 +130,58 @@ public class SwingView extends JFrame implements View{
                 int col = x<headsizx?-1 : (x-headsizx)/sqsiz;
                 int row = y<headsizy?-1 : (y-headsizy)/sqsiz;
                 try{
-                	return new Tile(col, row);
+                    return new Tile(col, row);
                 } catch(IndexOutOfBoundsException e){
-                	return null;
+                    return null;
                 }
             }
         }.init(640,480));
-		pack();
-		setLocationRelativeTo(null);
-		setDefaultCloseOperation(EXIT_ON_CLOSE);
-		setVisible(true);
-		imgs = new HashMap<Character, Image>();
-		String imgloc = "./res/drawable-hdpi/";
-		File filoc;
-		try {
-			filoc = new File(imgloc, "pl.png"); if(filoc.exists()){imgs.put('p', ImageIO.read(filoc));}
-			filoc = new File(imgloc, "rl.png"); if(filoc.exists()){imgs.put('r', ImageIO.read(filoc));}
-			filoc = new File(imgloc, "nl.png"); if(filoc.exists()){imgs.put('n', ImageIO.read(filoc));}
-			filoc = new File(imgloc, "bl.png"); if(filoc.exists()){imgs.put('b', ImageIO.read(filoc));}
-			filoc = new File(imgloc, "ql.png"); if(filoc.exists()){imgs.put('q', ImageIO.read(filoc));}
-			filoc = new File(imgloc, "kl.png"); if(filoc.exists()){imgs.put('k', ImageIO.read(filoc));}
-			filoc = new File(imgloc, "pd.png"); if(filoc.exists()){imgs.put('P', ImageIO.read(filoc));}
-			filoc = new File(imgloc, "rd.png"); if(filoc.exists()){imgs.put('R', ImageIO.read(filoc));}
-			filoc = new File(imgloc, "nd.png"); if(filoc.exists()){imgs.put('N', ImageIO.read(filoc));}
-			filoc = new File(imgloc, "bd.png"); if(filoc.exists()){imgs.put('B', ImageIO.read(filoc));}
-			filoc = new File(imgloc, "qd.png"); if(filoc.exists()){imgs.put('Q', ImageIO.read(filoc));}
-			filoc = new File(imgloc, "kd.png"); if(filoc.exists()){imgs.put('K', ImageIO.read(filoc));}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		avails = new ArrayList<Tile>();
+        pack();
+        setLocationRelativeTo(null);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setVisible(true);
+        imgs = new HashMap<Character, Image>();
+        String imgloc = "./res/drawable-hdpi/";
+        File filoc;
+        try {
+            filoc = new File(imgloc, "pl.png"); if(filoc.exists()){imgs.put('p', ImageIO.read(filoc));}
+            filoc = new File(imgloc, "rl.png"); if(filoc.exists()){imgs.put('r', ImageIO.read(filoc));}
+            filoc = new File(imgloc, "nl.png"); if(filoc.exists()){imgs.put('n', ImageIO.read(filoc));}
+            filoc = new File(imgloc, "bl.png"); if(filoc.exists()){imgs.put('b', ImageIO.read(filoc));}
+            filoc = new File(imgloc, "ql.png"); if(filoc.exists()){imgs.put('q', ImageIO.read(filoc));}
+            filoc = new File(imgloc, "kl.png"); if(filoc.exists()){imgs.put('k', ImageIO.read(filoc));}
+            filoc = new File(imgloc, "pd.png"); if(filoc.exists()){imgs.put('P', ImageIO.read(filoc));}
+            filoc = new File(imgloc, "rd.png"); if(filoc.exists()){imgs.put('R', ImageIO.read(filoc));}
+            filoc = new File(imgloc, "nd.png"); if(filoc.exists()){imgs.put('N', ImageIO.read(filoc));}
+            filoc = new File(imgloc, "bd.png"); if(filoc.exists()){imgs.put('B', ImageIO.read(filoc));}
+            filoc = new File(imgloc, "qd.png"); if(filoc.exists()){imgs.put('Q', ImageIO.read(filoc));}
+            filoc = new File(imgloc, "kd.png"); if(filoc.exists()){imgs.put('K', ImageIO.read(filoc));}
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        avails = new ArrayList<Tile>();
     }
 
     protected char inttocolchar(int col){
-    	switch(col){
-    	case 0:
-    		return 'A';
-    	case 1:
-    		return 'B';
-    	case 2:
-    		return 'C';
-    	case 3:
-    		return 'D';
-    	case 4:
-    		return 'E';
-    	case 5:
-    		return 'F';
-    	case 6:
-    		return 'G';
-    	case 7:
-    		return 'H';
-    	}
-    	return '-';
+        switch(col){
+            case 0:
+                return 'A';
+            case 1:
+                return 'B';
+            case 2:
+                return 'C';
+            case 3:
+                return 'D';
+            case 4:
+                return 'E';
+            case 5:
+                return 'F';
+            case 6:
+                return 'G';
+            case 7:
+                return 'H';
+        }
+        return '-';
     }
     public void drawBoard(Piece[][] board, Graphics g, int x,int y, int width,int height, boolean headers) {
         if (board != null) {
@@ -240,7 +240,7 @@ public class SwingView extends JFrame implements View{
                     if(piece!=null){
                         Image img = imgs.get(piece.toCharTeam());
                         if(img==null){
-                        	if(piece.getColor().equals(edu.neumont.pro180.chess.core.model.Color.LIGHT)){
+                            if(piece.getColor().equals(edu.neumont.pro180.chess.core.model.Color.LIGHT)){
                                 g.setColor(new Color(255,100,0));
                             }
                             else{
@@ -258,21 +258,21 @@ public class SwingView extends JFrame implements View{
         }
     }
 
-	@Override
-	public void notifyCheck() {
-		JOptionPane.showMessageDialog(this, "Check");
-	}
-	@Override
-	public Move readMove() {
+    @Override
+    public void notifyCheck() {
+        JOptionPane.showMessageDialog(this, "Check");
+    }
+    @Override
+    public Move readMove() {
         do{
             if(newcmd!=null) {
                 return newcmd;
             }
             Thread.yield();
         }while(true);
-	}
-	@Override
-	public Piece.Type getPawnPromotion() {
+    }
+    @Override
+    public Piece.Type getPawnPromotion() {
         String resp = (String) JOptionPane.showInputDialog(this, "What would you like to promote your pawn to?", "Pawn Promotion", JOptionPane.QUESTION_MESSAGE, null, new String[]{"Queen","Bishop","Knight","Rook"}, null);
         if(resp!=null && resp.length()>0){
             if(resp.equals("Queen")){
@@ -289,30 +289,30 @@ public class SwingView extends JFrame implements View{
             }
         }
         return null;
-	}
-	@Override
-	public void displayBoard(Piece[][] pieces) {
-		lastboard = pieces;
-		repaint();
-	}
-	@Override
-	public void highlightTiles(Tile start, List<Tile> ends) {
-		movef = start;
-		avails = ends;
-		repaint();
-	}
-	@Override
-	public void setListener(Listener listener) {
-		this.listener = listener;
-	}
-	@Override
-	public void notifyGameOver(edu.neumont.pro180.chess.core.model.Color result) {
-		JOptionPane.showMessageDialog(this, "Game Over");
+    }
+    @Override
+    public void displayBoard(Piece[][] pieces) {
+        lastboard = pieces;
+        repaint();
+    }
+    @Override
+    public void highlightTiles(Tile start, List<Tile> ends) {
+        movef = start;
+        avails = ends;
+        repaint();
+    }
+    @Override
+    public void setListener(Listener listener) {
+        this.listener = listener;
+    }
+    @Override
+    public void notifyGameOver(edu.neumont.pro180.chess.core.model.Color result) {
+        JOptionPane.showMessageDialog(this, "Game Over");
 
-	}
+    }
 
     public static void main(String[] args){
-    	Controller cont = new Controller(new SwingView());
+        Controller cont = new Controller(new SwingView());
     }
 
 

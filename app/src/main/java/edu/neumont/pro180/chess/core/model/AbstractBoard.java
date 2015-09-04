@@ -1,9 +1,12 @@
 package edu.neumont.pro180.chess.core.model;
 
+import java.util.ArrayList;
+
 import edu.neumont.pro180.chess.core.model.Piece.Type;
 
 public abstract class AbstractBoard {
     private Piece[][] pieces;
+    private ArrayList<Piece> capturedPieces = new ArrayList<>();
 
     public Tile lightKingLocation;
     public Tile darkKingLocation;
@@ -74,6 +77,10 @@ public abstract class AbstractBoard {
         int x2 = move.getEnd().x;
         int y2 = move.getEnd().y;
 
+        if(pieces[y2][x2] != null) {
+            capturedPieces.add(pieces[y2][x2]);
+        }
+
         pieces[y2][x2] = pieces[y1][x1];
         pieces[y1][x1] = null;
 
@@ -142,4 +149,7 @@ public abstract class AbstractBoard {
         return board.substring(0, board.length() - 1); // TODO: this only removes the \n
     }
 
+    public ArrayList<Piece> getCapturedPieces() {
+        return capturedPieces;
+    }
 }
