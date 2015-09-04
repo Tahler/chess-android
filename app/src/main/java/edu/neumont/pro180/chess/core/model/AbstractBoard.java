@@ -1,9 +1,16 @@
 package edu.neumont.pro180.chess.core.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import edu.neumont.pro180.chess.core.model.Piece.Type;
 
 public abstract class AbstractBoard {
     private Piece[][] pieces;
+    // Pieces captured by light - the pieces themselves are dark
+    private List<Piece> lightCapturedPieces;
+    // Pieces captured by dark - the pieces themselves are light
+    private List<Piece> darkCapturedPieces;
 
     public Tile lightKingLocation;
     public Tile darkKingLocation;
@@ -31,6 +38,9 @@ public abstract class AbstractBoard {
         pieces[7][3] = new Piece(Type.QUEEN, Color.LIGHT);
         pieces[7][4] = new Piece(Type.KING, Color.LIGHT);
         lightKingLocation = new Tile(4, 7);
+
+        lightCapturedPieces = new ArrayList<>();
+        darkCapturedPieces = new ArrayList<>();
     }
 
     /**
@@ -74,6 +84,12 @@ public abstract class AbstractBoard {
         int x2 = move.getEnd().x;
         int y2 = move.getEnd().y;
 
+        Piece captured = pieces[y2][x2];
+        if(captured != null) {
+            if (captured.getColor().equals(Color.LIGHT)) darkCapturedPieces.add(captured);
+            else lightCapturedPieces.add(captured);
+        }
+
         pieces[y2][x2] = pieces[y1][x1];
         pieces[y1][x1] = null;
 
@@ -95,6 +111,20 @@ public abstract class AbstractBoard {
 
     public Piece[][] getPieces() {
         return pieces;
+    }
+
+    /**
+     * @return The list of pieces captured by LIGHT. The pieces contained will be DARK.
+     */
+    public List<Piece> getLightCapturedPieces() {
+        return lightCapturedPieces;
+    }
+
+    /**
+     * @return The list of pieces captured by DARK. The pieces contained will be LIGHT.
+     */
+    public List<Piece> getDarkCapturedPieces() {
+        return darkCapturedPieces;
     }
 
     /**
@@ -141,5 +171,4 @@ public abstract class AbstractBoard {
 //        return board;
         return board.substring(0, board.length() - 1); // TODO: this only removes the \n
     }
-
 }

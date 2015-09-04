@@ -25,7 +25,7 @@ public class Controller implements View.Listener {
         this.validator = new MoveValidator(board);
         this.view = view;
         this.view.setListener(this);
-        this.view.displayBoard(board.getPieces());
+        this.view.displayBoard(board);
     }
 
     @Override
@@ -71,7 +71,7 @@ public class Controller implements View.Listener {
         if (validator.isInCheck()) view.notifyCheck();
 
         // Send the new Piece[][] to the view
-        view.displayBoard(board.getPieces());
+        view.displayBoard(board);
 
         // If this move has now ended the game, end the game.
         if (validator.isOver()) view.notifyGameOver(validator.getResult());
