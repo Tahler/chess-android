@@ -1,8 +1,6 @@
 package edu.neumont.pro180.chess.core.view;
 
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -269,38 +267,68 @@ public class ChessBoardView extends SurfaceView implements View, android.view.Vi
     }
 
     @Override
-    public Piece.Type getPawnPromotion() {
-        final String[] choices = new String[]{
-                "Queen",
-                "Knight",
-                "Rook",
-                "Bishop"
-        };
-        final String[] choice = new String[1];
+    public synchronized Piece.Type getPawnPromotion() {
+//        final String[] choices = new String[]{
+//                "Queen",
+//                "Knight",
+//                "Rook",
+//                "Bishop"
+//        };
+//        final Integer[] choice = new Integer[1];
+//        choice[0] = 0;
+//
+//        Thread t = new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//                new AlertDialog.Builder(getContext())
+//                        .setCancelable(false)
+//                        .setTitle(R.string.pawn_promotion)
+//                        .setItems(choices, new DialogInterface.OnClickListener() {
+//                            @Override
+//                            public void onClick(DialogInterface dialog, int which) {
+//                                choice[0] = which;
+//                                dialog.dismiss();
+//                            }
+//                        })
+//                        .show();
+//                // wait?
+//            }
+//        });
+//        t.start();
+//
+//        try {
+//            System.out.println("WAITING");
+//            t.join();
+//            System.out.println("COMPLETED");
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
+//
+//        switch (choices[choice[0]]) {
+//            case "Queen":
+//                return Piece.Type.QUEEN;
+//            case "Knight":
+//                return Piece.Type.KNIGHT;
+//            case "Rook":
+//                return Piece.Type.ROOK;
+//            case "Bishop":
+//                return Piece.Type.BISHOP;
+//            default:
+//                return null;
+//        }
 
-        new AlertDialog.Builder(getContext())
-                .setCancelable(false)
-                .setTitle(R.string.pawn_promotion)
-                .setItems(choices, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        choice[0] = choices[which];
-                    }
-                })
-                .create()
-                .show();
+        return Piece.Type.QUEEN;
+    }
 
-        switch (choice[0]) {
-            case "Queen":
-                return Piece.Type.QUEEN;
-            case "Knight":
-                return Piece.Type.KNIGHT;
-            case "Rook":
-                return Piece.Type.ROOK;
-            case "Bishop":
-                return Piece.Type.BISHOP;
-            default:
-                return null;
+    private abstract class PromptRunnable implements Runnable {
+        private Integer value;
+
+        public void setValue(Integer value) {
+            this.value = value;
+        }
+
+        public Integer getValue() {
+            return this.value;
         }
     }
 
