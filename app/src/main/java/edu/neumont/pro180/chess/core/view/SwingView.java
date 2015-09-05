@@ -36,7 +36,6 @@ public class SwingView extends JFrame implements View{
     int mousey;
     Tile mouse;
     Tile movef;
-    Tile movet;
     Move newcmd;
     List<Tile> avails;
     Map<Character, Image> imgs;
@@ -75,34 +74,6 @@ public class SwingView extends JFrame implements View{
                     			listener.tileSelected(clickmove);
                     		}
                     	}
-                        if(listener!=null){
-                            if(movef!=null){
-                                listener.moveSelected(new Move(movef, getloc(arg0.getX(), arg0.getY())));
-                                avails.clear();
-                                movef = null;
-                            }
-                            else{
-                                listener.tileSelected(getloc(arg0.getX(), arg0.getY()));
-                            }
-                        }
-                    	/*
-//                        if(mode==Model.MODE.PLAY){
-                            if(movef==null){
-                                movef = getloc(arg0.getX(), arg0.getY());
-//                                if(!(lastboard.getPieceAt(movef)!=null && !lastboard.getPieceAt(movef).isColor(lastboard.getlastmovecolor()))){
-                                    movef = null;
-//                                }
-//                                avails = lastboard.availmoves(movef);
-                                repaint();
-                            }
-                            else{
-                                movet = getloc(arg0.getX(), arg0.getY());
-                                newcmd = new Move(movef, movet);
-                                movef = null;
-                                avails.clear();
-                            }
-//                        }
-                    	 */
                     }
                     public void mouseEntered(MouseEvent arg0) {
 
@@ -315,7 +286,8 @@ public class SwingView extends JFrame implements View{
 	
 
     public static void main(String[] args){
-    	Controller cont = new Controller(new multiView(new SwingView(), new SwingView(), new SwingView()));
+    	new Controller(new multiView(new SwingView(), new SwingView()));
+//    	new Controller(new multiView(new SwingView(), new serverView()));
     }
 
 }
