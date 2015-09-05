@@ -1,8 +1,11 @@
 package edu.neumont.pro180.chess.core.model;
 
-public class Piece {
+import java.io.Serializable;
 
-    public enum Type {
+public class Piece implements Serializable{
+	private static final long serialVersionUID = 1L;
+
+	public enum Type {
         PAWN,
         ROOK,
         KNIGHT,

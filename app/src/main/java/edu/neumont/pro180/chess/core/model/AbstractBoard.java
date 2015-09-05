@@ -1,12 +1,14 @@
 package edu.neumont.pro180.chess.core.model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 import edu.neumont.pro180.chess.core.model.Piece.Type;
 
-public abstract class AbstractBoard {
-    private Piece[][] pieces;
+public abstract class AbstractBoard implements Serializable{
+	private static final long serialVersionUID = 1L;
+	private Piece[][] pieces;
     // Pieces captured by light - the pieces themselves are dark
     private List<Piece> lightCapturedPieces;
     // Pieces captured by dark - the pieces themselves are light

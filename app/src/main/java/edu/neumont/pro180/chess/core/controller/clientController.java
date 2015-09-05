@@ -1,19 +1,14 @@
 package edu.neumont.pro180.chess.core.controller;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.net.Inet4Address;
-import java.net.InterfaceAddress;
-import java.net.NetworkInterface;
 import java.net.Socket;
-import java.net.SocketException;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
@@ -49,36 +44,14 @@ public class clientController implements View.Listener {
         clientThread = new Thread(new Runnable(){
 			@Override
 			public void run() {
-				//find the server first
-				/*
-				List<byte[]> localaddresses = new ArrayList<byte[]>();
-				try{
-				for(Enumeration<NetworkInterface> n = NetworkInterface.getNetworkInterfaces(); n.hasMoreElements(); ){
-					NetworkInterface i = n.nextElement();
-					for(InterfaceAddress a : i.getInterfaceAddresses()){
-						short netmask = a.getNetworkPrefixLength();
-						localaddresses.add(a.getAddress().getAddress());
-						for(short p=netmask>24?netmask:24; p<32; p++){
-							byte[] tmp = new byte[]{localaddresses.get(localaddresses.size()-1)[0], localaddresses.get(localaddresses.size()-1)[1], localaddresses.get(localaddresses.size()-1)[2], localaddresses.get(localaddresses.size()-1)[3]};
-							for(short j=netmask>16?netmask:16; j<24; j++){
-								for(short k=netmask>8?netmask:8; k<16; k++){
-									for(short m=netmask; m<8; m++){
-										
-									}
-								}
-							}
-						}
-					}
-        		}
-				}catch(SocketException e){
-					e.printStackTrace();
-				}
-				*/
-				
-				//once found, connect to the server
+				//connect to the server via the broadcast address
 				try(Socket s = new Socket("0.0.0.0", 31415);){
 					DataInputStream is = new DataInputStream(s.getInputStream());
 					DataOutputStream os = new DataOutputStream(s.getOutputStream());
+					char r = (char) is.read();
+					if(r!='B'){
+						System.err.println("Not a Board "+r);
+					}
 					board.set(readBoard(is));
 					view.displayBoard(board.get());
 					while(!done.get()){
@@ -100,10 +73,10 @@ public class clientController implements View.Listener {
 						}break;
 						case 'H':{//hilightTiles
 							ObjectInputStream objstr = new ObjectInputStream(is);
-							List<Move> h = (List<Move>) objstr.readObject();
+							List<Tile> h = (List<Tile>) objstr.readObject();
 				            List<Tile> ends = new ArrayList<>();
-				            for (Move m : h) ends.add(m.getEnd());
-							view.highlightTiles(h.get(0).getStart(), ends);
+				            for (int i=1; i<h.size(); i++) ends.add(h.get(i));
+							view.highlightTiles(h.get(0), ends);
 						}break;
 						case 'P':{//getPawnPromotion
 							ObjectOutputStream objstr = new ObjectOutputStream(os);
@@ -127,14 +100,9 @@ public class clientController implements View.Listener {
 							os.write(m);
 							os.flush();
 							switch(m[0]){
-							case 'T':{//tileSelected
-								//TODO: tileSelected
-
-							}break;
-							case 'M':{//moveSelected
-								//TODO: moveSelected
-
-							}break;
+							case 'T'://tileSelected
+							case 'M'://moveSelected
+							break;
 							default:
 								System.err.println("Sending an unknown message to server, may break communications :"+m[0]);
 							}
@@ -152,13 +120,14 @@ public class clientController implements View.Listener {
         clientThread.start();
     }
     
-    private Board readBoard(InputStream is) throws IOException, ClassNotFoundException{
-    	char buf;
-    	if((buf=(char)is.read()) != 'B'){
-    		throw new ClassNotFoundException("No Board in InputStream (identifier was '"+buf+"')");
+    private Board readBoard(DataInputStream is) throws IOException, ClassNotFoundException{
+    	byte[] bytbuf = new byte[is.readInt()];
+    	for(int i=0; i<bytbuf.length; i++){
+    		bytbuf[i] = (byte) is.read();
     	}
-    	ObjectInputStream bytstr = new ObjectInputStream(is);
-    	return (Board) bytstr.readObject();
+    	ByteArrayInputStream bytstr = new ByteArrayInputStream(bytbuf);
+    	ObjectInputStream objstr = new ObjectInputStream(bytstr);
+    	return (Board) objstr.readObject();
     }
 
     @Override

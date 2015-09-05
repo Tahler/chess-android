@@ -19,6 +19,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 
+import edu.neumont.pro180.chess.core.controller.Controller;
+import edu.neumont.pro180.chess.core.controller.clientController;
 import edu.neumont.pro180.chess.core.model.Board;
 import edu.neumont.pro180.chess.core.model.Color;
 import edu.neumont.pro180.chess.core.model.Move;
@@ -54,11 +56,13 @@ public class serverView implements View{
 						try(Socket s = ss.accept();){
 							DataInputStream is = new DataInputStream(s.getInputStream());
 							DataOutputStream os = new DataOutputStream(s.getOutputStream());
-							os.write('B');
 							writeBoard(board.get(), os);
 							os.flush();
 							while(!s.isClosed()){
 								//send one message
+								while(sendmessages.size()==0){
+									Thread.yield();
+								}
 								byte[] msg = sendmessages.poll();
 								os.write(msg);
 								os.flush();
@@ -120,7 +124,7 @@ public class serverView implements View{
 		});
 		serverThread.start();
 		messagepingThread = new Thread(new Runnable(){
-			public static final int PINGWAIT = 2000;
+			public static final int PINGWAIT = 500;
 			public static final int PINGSLEEP = PINGWAIT;
 			@Override
 			public void run() {
@@ -140,12 +144,14 @@ public class serverView implements View{
 	}
 	
 	private void writeBoard(Board b, OutputStream os) throws IOException{
+		DataOutputStream datstr = new DataOutputStream(os);
 		ByteArrayOutputStream bytstr = new ByteArrayOutputStream();
-		bytstr.write('B');
 		ObjectOutputStream objstr = new ObjectOutputStream(bytstr);
 		objstr.writeObject(b);
 		objstr.close();
-		os.write(bytstr.toByteArray());
+		datstr.write('B');
+		datstr.writeInt(bytstr.size());
+		datstr.write(bytstr.toByteArray());
 	}
 	private void writeColor(Color c, OutputStream os) throws IOException{
 		ByteArrayOutputStream bytstr = new ByteArrayOutputStream();
@@ -231,6 +237,16 @@ public class serverView implements View{
 	@Override
 	public void setListener(Listener listener) {
 		this.listener = listener;
+	}
+	
+	
+	public static void main(String[] args){
+    	new Controller(new multiView(new SwingView(), new serverView()));
+    	try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e) {
+		}
+    	clientController.main(args);
 	}
 
 }

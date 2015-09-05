@@ -287,7 +287,6 @@ public class SwingView extends JFrame implements View{
 
     public static void main(String[] args){
     	new Controller(new multiView(new SwingView(), new SwingView()));
-//    	new Controller(new multiView(new SwingView(), new serverView()));
     }
 
 }
