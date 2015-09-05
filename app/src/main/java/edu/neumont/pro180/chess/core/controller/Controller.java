@@ -56,21 +56,21 @@ public class Controller implements View.Listener {
         }
 
         // Pawn promotion
-        boolean piecePromotion = false;
+        boolean shouldPromote = false;
         Piece mover = board.getPieceAt(move.getEnd()); // The piece has already moved, so it is in its ending spot
         if (mover.getType().equals(Piece.Type.PAWN)) {
             if (mover.getColor().equals(Color.LIGHT)) {
-                if (move.getEnd().y == 0) piecePromotion = true;
+                if (move.getEnd().y == 0) shouldPromote = true;
             } else {
-                if (move.getEnd().y == 7) piecePromotion = true;
+                if (move.getEnd().y == 7) shouldPromote = true;
             }
         }
-        if (piecePromotion) mover.setType(view.getPawnPromotion());
-
-        if (validator.isInCheck()) view.notifyCheck();
+        if (shouldPromote) mover.setType(view.getPawnPromotion());
 
         // Send the new Piece[][] to the view
         view.displayBoard(board);
+
+        if (validator.isInCheck()) view.notifyCheck();
 
         // If this move has now ended the game, end the game.
         if (validator.isOver()) view.notifyGameOver(validator.getResult());

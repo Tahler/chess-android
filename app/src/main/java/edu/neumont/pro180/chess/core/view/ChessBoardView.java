@@ -166,14 +166,20 @@ public class ChessBoardView extends SurfaceView implements View, android.view.Vi
     public void displayBoard(Board board) {
         this.pieces = board.getPieces();
         Log.d("displayBoard()", "Received new Board");
-        if (board.getCurrentTurnColor().equals(edu.neumont.pro180.chess.core.model.Color.LIGHT)) {
-//            lightPlayerView.notifyTurn();
-        } else {
-//            darkPlayerView.notifyTurn();
-        }
+        turnChange(board.getCurrentTurnColor());
         lightPlayerView.setCapturedPieces(board.getLightCapturedPieces());
         darkPlayerView.setCapturedPieces(board.getDarkCapturedPieces());
         draw();
+    }
+
+    private void turnChange(edu.neumont.pro180.chess.core.model.Color currentTurnColor) {
+        lightPlayerView.resetText();
+        darkPlayerView.resetText();
+        if (currentTurnColor.equals(edu.neumont.pro180.chess.core.model.Color.LIGHT)) {
+            lightPlayerView.notifyTurn();
+        } else {
+            darkPlayerView.notifyTurn();
+        }
     }
 
     /**
@@ -189,15 +195,15 @@ public class ChessBoardView extends SurfaceView implements View, android.view.Vi
 
     @Override
     public void notifyCheck() {
-//        lightPlayerView.notifyCheck();
-//        darkPlayerView.notifyCheck();
-        System.out.println("Check!");
+        // TODO only show to the side that is in check?
+        lightPlayerView.notifyCheck();
+        darkPlayerView.notifyCheck();
     }
 
     @Override
     public void notifyGameOver(edu.neumont.pro180.chess.core.model.Color result) {
-        // TODO
-        System.out.println((result == null) ? "Stalemate!" : "Checkmate! The winner is " + result + "!");
+        lightPlayerView.notifyGameOver(result);
+        darkPlayerView.notifyGameOver(result);
     }
 
     /**
@@ -267,7 +273,7 @@ public class ChessBoardView extends SurfaceView implements View, android.view.Vi
     }
 
     @Override
-    public synchronized Piece.Type getPawnPromotion() {
+    public Piece.Type getPawnPromotion() {
 //        final String[] choices = new String[]{
 //                "Queen",
 //                "Knight",
@@ -318,18 +324,6 @@ public class ChessBoardView extends SurfaceView implements View, android.view.Vi
 //        }
 
         return Piece.Type.QUEEN;
-    }
-
-    private abstract class PromptRunnable implements Runnable {
-        private Integer value;
-
-        public void setValue(Integer value) {
-            this.value = value;
-        }
-
-        public Integer getValue() {
-            return this.value;
-        }
     }
 
     @Override
