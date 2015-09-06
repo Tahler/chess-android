@@ -32,7 +32,8 @@ public class CapturedPieceView extends SurfaceView {
             @Override
             public void surfaceCreated(SurfaceHolder surfaceHolder) {
                 Canvas canvas = holder.lockCanvas(null);
-                displaySize = (int) (getWidth() / 8.0 * 0.60D);
+
+                displaySize = (int) (getHeight()/2);
                 paint = new Paint();
                 holder.unlockCanvasAndPost(canvas);
                 draw();
@@ -53,21 +54,49 @@ public class CapturedPieceView extends SurfaceView {
         super.draw(canvas);
         canvas.drawColor(Color.LTGRAY);
         drawPieces(canvas);
+        canvas.rotate(180);
     }
 
     private void drawPieces(Canvas canvas) {
-        int count = 0;
-        int y = 0;
-        int overflow = (getRootView().getWidth() / displaySize) - 1;
+        int[] xPos = {0, 0, displaySize, displaySize*2, displaySize*3, displaySize*4};
+        int y;
+        int x;
         for (Piece p : capturedPieces) {
-            if (count > overflow) {
-                y += displaySize;
-                count = 0;
-            }
             Bitmap unscaled = getPieceBitMap(p);
+
             Bitmap scaled = Bitmap.createScaledBitmap(unscaled, displaySize, displaySize, false);
-            canvas.drawBitmap(scaled, count * displaySize, y, paint);
-            count++;
+            if (p.getType().equals(Piece.Type.PAWN)) {
+                y = 0;
+                x = xPos[0];
+                xPos[0] += displaySize;
+            }
+            else {
+                y = displaySize;
+                switch (p.getType()) {
+                    case ROOK:
+                        x = xPos[1];
+                        xPos[1] = xPos[1] + 7*displaySize;
+                        break;
+                    case KNIGHT:
+                        x = xPos[2];
+                        xPos[2] = xPos[2] + 5*displaySize;
+                        break;
+                    case BISHOP:
+                        x = xPos[3];
+                        xPos[3] = xPos[3] + 3*displaySize;
+                        break;
+                    case QUEEN:
+                        x = xPos[4];
+                        xPos[4] += 5;
+                        break;
+                    case KING:
+                        x = xPos[5];
+                        break;
+                    default:
+                        x = -1;
+                }
+            }
+            canvas.drawBitmap(scaled, x, y, paint);
         }
     }
 
