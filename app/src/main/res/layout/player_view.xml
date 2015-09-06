@@ -1,6 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <!--<edu.neumont.pro180.chess.core.view.NotificationView
+        android:id="@+id/notification_view"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />-->
+
+    <TextView
+        android:id="@+id/notification_view"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.4" />
+
+    <edu.neumont.pro180.chess.core.view.CapturedPieceView
+        android:id="@+id/captured_piece_view"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.6" />
+
+    <!--
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        android:layout_weight="4">
+
+        <edu.neumont.pro180.chess.core.view.CapturedPieceView
+            android:id="@+id/captured_piece_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <edu.neumont.pro180.chess.core.view.VoiceControlView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+    </LinearLayout>
+-->
 </LinearLayout>

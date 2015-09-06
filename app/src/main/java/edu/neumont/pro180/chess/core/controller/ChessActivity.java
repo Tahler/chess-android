@@ -28,13 +28,17 @@ public class ChessActivity extends Activity {
         ViewGroup.LayoutParams params = boardView.getLayoutParams();
         params.height = size.x;
         params.width = size.x;
+        int playerViewHeight = (size.y - size.x) / 2;
+
 
         // Set player views to correct size
-        PlayerView light = (PlayerView) findViewById(R.id.captured_light);
+        PlayerView light = (PlayerView) findViewById(R.id.light_player_view);
         light.getLayoutParams().width = size.x;
+        light.getLayoutParams().height = playerViewHeight;
 
-        PlayerView dark = (PlayerView) findViewById(R.id.captured_dark);
+        PlayerView dark = (PlayerView) findViewById(R.id.dark_player_view);
         dark.getLayoutParams().width = size.x;
+        dark.getLayoutParams().height = playerViewHeight;
 
         // Attach the player views to the board
         boardView.setLightPlayerView(light);

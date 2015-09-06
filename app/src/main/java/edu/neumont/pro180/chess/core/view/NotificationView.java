@@ -4,11 +4,15 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.widget.LinearLayout;
 
+import edu.neumont.pro180.chess.R;
 import edu.neumont.pro180.chess.core.model.Color;
 
 public class NotificationView extends LinearLayout {
+    // two textviews
+
     public NotificationView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        inflate(context, R.layout.notification_view, this);
     }
 
     public void notifyCheck() {
