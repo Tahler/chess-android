@@ -58,6 +58,7 @@ public class CapturedPieceView extends SurfaceView {
     }
 
     private void drawPieces(Canvas canvas) {
+        int offset = (getWidth() - displaySize*8)/2;
         int[] xPos = {0, 0, displaySize, displaySize*2, displaySize*3, displaySize*4};
         int y;
         int x;
@@ -96,7 +97,7 @@ public class CapturedPieceView extends SurfaceView {
                         x = -1;
                 }
             }
-            canvas.drawBitmap(scaled, x, y, paint);
+            canvas.drawBitmap(scaled, offset + x, y, paint);
         }
     }
 
