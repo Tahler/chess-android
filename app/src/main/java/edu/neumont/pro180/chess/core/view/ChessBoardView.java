@@ -55,11 +55,24 @@ public class ChessBoardView extends SurfaceView implements View, android.view.Vi
                 draw();
             }
 
-            public void surfaceChanged(SurfaceHolder surfaceHolder, int i, int i2, int i3) {}
+            public void surfaceChanged(SurfaceHolder surfaceHolder, int i, int i2, int i3) {
+            }
 
-            public void surfaceDestroyed(SurfaceHolder surfaceHolder) {}
+            public void surfaceDestroyed(SurfaceHolder surfaceHolder) {
+            }
         });
         setOnTouchListener(this);
+
+//        inflate(context, R.layout.player_view, null);
+//
+        // Set voice control button action
+//        findViewById(R.id.voice_control_button)
+//                .setOnClickListener(new OnClickListener() {
+//                    @Override
+//                    public void onClick(android.view.View v) {
+//                         TODO: all voice control actions
+//                    }
+//                });
     }
 
     @Override

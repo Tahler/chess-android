@@ -1,8 +1,8 @@
 package edu.neumont.pro180.chess.core.view;
 
 import android.content.Context;
+import android.graphics.PixelFormat;
 import android.util.AttributeSet;
-import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -20,18 +20,16 @@ public class PlayerView extends LinearLayout {
 //    private NotificationView notificationView;
     private TextView notificationView;
     private CapturedPieceView capturedPieceView;
-    private Button voiceControl;
 
     public PlayerView(Context context, AttributeSet attrs) {
         super(context, attrs);
         inflate(context, R.layout.player_view, this);
 
         notificationView = (TextView) findViewById(R.id.notification_view);
-//        notificationView = (NotificationView) findViewById(R.id.notification_view);
-        capturedPieceView = (CapturedPieceView) findViewById(R.id.captured_piece_view);
 
-//        System.out.println(notificationView);
-//        voiceControl = (Button) findViewById(R.id.voice_control_button);
+        capturedPieceView = (CapturedPieceView) findViewById(R.id.captured_piece_view);
+        capturedPieceView.setZOrderOnTop(true);
+        capturedPieceView.getHolder().setFormat(PixelFormat.TRANSPARENT);
     }
 
     public void rotate() {

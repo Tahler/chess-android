@@ -4,7 +4,6 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Matrix;
 import android.support.annotation.NonNull;
 import android.util.AttributeSet;
@@ -32,8 +31,9 @@ public class CapturedPieceView extends SurfaceView {
             @Override
             public void surfaceCreated(SurfaceHolder surfaceHolder) {
                 Canvas canvas = holder.lockCanvas(null);
-                displaySize = getHeight()/2;
-                if (displaySize > getWidth()/8) displaySize = getWidth()/8;
+
+                displaySize = getHeight() / 2;
+                if (displaySize > getWidth() / 8) displaySize = getWidth() / 8;
                 holder.unlockCanvasAndPost(canvas);
                 draw();
             }
@@ -50,8 +50,8 @@ public class CapturedPieceView extends SurfaceView {
 
     @Override
     public void draw(@NonNull Canvas canvas) {
-        super.draw(canvas);
-        canvas.drawColor(Color.LTGRAY);
+//        super.draw(canvas);
+
         drawPieces(canvas);
     }
 
