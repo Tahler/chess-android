@@ -1,7 +1,10 @@
 package edu.neumont.pro180.chess.core.model;
 
-public class Move {
-    private final Tile start;
+import java.io.Serializable;
+
+public class Move implements Serializable{
+	private static final long serialVersionUID = 1L;
+	private final Tile start;
     private final Tile end;
     private Piece mover;
 

@@ -1,9 +1,12 @@
 package edu.neumont.pro180.chess.core.view;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Image;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -15,11 +18,14 @@ import java.util.List;
 import java.util.Map;
 
 import javax.imageio.ImageIO;
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import edu.neumont.pro180.chess.core.controller.Controller;
+import edu.neumont.pro180.chess.core.controller.clientController;
+import edu.neumont.pro180.chess.core.model.Board;
 import edu.neumont.pro180.chess.core.model.Move;
 import edu.neumont.pro180.chess.core.model.Piece;
 import edu.neumont.pro180.chess.core.model.Tile;
@@ -30,19 +36,21 @@ import edu.neumont.pro180.chess.core.view.View;
  */
 public class SwingView extends JFrame implements View{
     private static final long serialVersionUID = 1L;
-    Piece[][] lastboard;
+    Board lastboard;
     int mousex;
     int mousey;
     Tile mouse;
     Tile movef;
-    Tile movet;
     Move newcmd;
     List<Tile> avails;
     Map<Character, Image> imgs;
     Listener listener;
+    JPanel southpane;
+    JButton runbtn, conbtn;
 
     public SwingView(){
         setTitle("Chess");
+        setLayout(new BorderLayout());
         add(new JPanel(){
             private static final long serialVersionUID = 1L;
             public JPanel init(int w, int h){
@@ -60,37 +68,21 @@ public class SwingView extends JFrame implements View{
                         mousey = arg0.getY();
                         mouse = getloc(mousex, mousey);
                         repaint();
-                    }});
+                    }
+                });
                 addMouseListener(new MouseListener(){
                     public void mouseClicked(MouseEvent arg0) {
-                        if(listener!=null){
-                            if(movef!=null){
-                                listener.moveSelected(new Move(movef, getloc(arg0.getX(), arg0.getY())));
+                    	if(listener!=null){
+                    		Tile clickmove = getloc(arg0.getX(), arg0.getY());
+                    		if(movef!=null && avails.contains(clickmove)){
+                                listener.moveSelected(new Move(movef, clickmove));
                                 avails.clear();
                                 movef = null;
-                            }
-                            else{
-                                listener.tileSelected(getloc(arg0.getX(), arg0.getY()));
-                            }
-                        }
-                    	/*
-//                        if(mode==Model.MODE.PLAY){
-                            if(movef==null){
-                                movef = getloc(arg0.getX(), arg0.getY());
-//                                if(!(lastboard.getPieceAt(movef)!=null && !lastboard.getPieceAt(movef).isColor(lastboard.getlastmovecolor()))){
-                                    movef = null;
-//                                }
-//                                avails = lastboard.availmoves(movef);
-                                repaint();
-                            }
-                            else{
-                                movet = getloc(arg0.getX(), arg0.getY());
-                                newcmd = new Move(movef, movet);
-                                movef = null;
-                                avails.clear();
-                            }
-//                        }
-                    	 */
+                    		}
+                    		else{
+                    			listener.tileSelected(clickmove);
+                    		}
+                    	}
                     }
                     public void mouseEntered(MouseEvent arg0) {
 
@@ -114,6 +106,7 @@ public class SwingView extends JFrame implements View{
                 g.setColor(getBackground());
                 g.fillRect(0, 0, getWidth(), getHeight());
                 drawBoard(lastboard, g, 0, 0, getWidth(), getHeight(), true);
+                this.paintComponents(g);
             }
             public Tile getloc(int x, int y){
                 Graphics g = getGraphics();
@@ -135,7 +128,31 @@ public class SwingView extends JFrame implements View{
                     return null;
                 }
             }
-        }.init(640,480));
+        }.init(640,480), BorderLayout.CENTER);
+        runbtn = new JButton("Run Server");
+        runbtn.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				listener.changeView(new multiView(SwingView.this, new serverView()));
+				southpane.remove(runbtn);
+				southpane.remove(conbtn);
+				pack();
+			}
+		});
+        conbtn = new JButton("Connect to Server");
+        conbtn.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				new clientController(SwingView.this);
+				southpane.remove(runbtn);
+				southpane.remove(conbtn);
+				pack();
+			}
+		});
+        southpane = new JPanel();
+        southpane.add(runbtn);
+        southpane.add(conbtn);
+        add(southpane, BorderLayout.SOUTH);
         pack();
         setLocationRelativeTo(null);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -183,8 +200,8 @@ public class SwingView extends JFrame implements View{
         }
         return '-';
     }
-    public void drawBoard(Piece[][] board, Graphics g, int x,int y, int width,int height, boolean headers) {
-        if (board != null) {
+    public void drawBoard(Board lastboard, Graphics g, int x,int y, int width,int height, boolean headers) {
+        if (lastboard != null) {
             int headsiz = headers ? (Math.max(g.getFontMetrics().getHeight(), g.getFontMetrics().charWidth('M')) + 2) : 0;
             int tmpsiz = (width - headsiz * 2) / 8;
             int sqsiz = (height - headsiz * 2) / 8;
@@ -236,7 +253,7 @@ public class SwingView extends JFrame implements View{
                         g.setColor(new Color(0,0,0));
                         g.fillRect(i*sqsiz+spacersizx+x, j*sqsiz+spacersizy+y, sqsiz, sqsiz);
                     }
-                    Piece piece = board[thisloc.y][thisloc.x];
+                    Piece piece = lastboard.getPieceAt(thisloc);
                     if(piece!=null){
                         Image img = imgs.get(piece.toCharTeam());
                         if(img==null){
@@ -263,15 +280,6 @@ public class SwingView extends JFrame implements View{
         JOptionPane.showMessageDialog(this, "Check");
     }
     @Override
-    public Move readMove() {
-        do{
-            if(newcmd!=null) {
-                return newcmd;
-            }
-            Thread.yield();
-        }while(true);
-    }
-    @Override
     public Piece.Type getPawnPromotion() {
         String resp = (String) JOptionPane.showInputDialog(this, "What would you like to promote your pawn to?", "Pawn Promotion", JOptionPane.QUESTION_MESSAGE, null, new String[]{"Queen","Bishop","Knight","Rook"}, null);
         if(resp!=null && resp.length()>0){
@@ -289,31 +297,31 @@ public class SwingView extends JFrame implements View{
             }
         }
         return null;
-    }
-    @Override
-    public void displayBoard(Piece[][] pieces) {
-        lastboard = pieces;
-        repaint();
-    }
-    @Override
-    public void highlightTiles(Tile start, List<Tile> ends) {
-        movef = start;
-        avails = ends;
-        repaint();
-    }
-    @Override
-    public void setListener(Listener listener) {
-        this.listener = listener;
-    }
-    @Override
-    public void notifyGameOver(edu.neumont.pro180.chess.core.model.Color result) {
-        JOptionPane.showMessageDialog(this, "Game Over");
-
-    }
+	}
+	@Override
+	public void displayBoard(Board pieces) {
+		lastboard = pieces;
+		repaint();
+	}
+	@Override
+	public void highlightTiles(Tile start, List<Tile> ends) {
+		movef = start;
+		avails = ends;
+		repaint();
+	}
+	@Override
+	public void setListener(Listener listener) {
+		this.listener = listener;
+	}
+	@Override
+	public void notifyGameOver(edu.neumont.pro180.chess.core.model.Color result) {
+		JOptionPane.showMessageDialog(this, "Game Over");
+	}
+	
 
     public static void main(String[] args){
-        Controller cont = new Controller(new SwingView());
+//    	new Controller(new multiView(new SwingView(), new SwingView()));
+    	new Controller(new SwingView());
     }
-
 
 }

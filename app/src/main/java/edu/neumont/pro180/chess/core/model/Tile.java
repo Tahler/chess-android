@@ -1,10 +1,13 @@
 package edu.neumont.pro180.chess.core.model;
 
+import java.io.Serializable;
+
 /**
  * Simply a wrapper for an x and y value on the chess board.
  */
-public class Tile {
-    public final Integer x; // Column
+public class Tile implements Serializable{
+	private static final long serialVersionUID = 1L;
+	public final Integer x; // Column
     public final Integer y; // Row
 
     public Tile(Integer x, Integer y) throws IndexOutOfBoundsException {

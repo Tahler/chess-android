@@ -5,8 +5,9 @@ import java.util.List;
 
 import edu.neumont.pro180.chess.core.model.Piece.Type;
 
-public class Board extends AbstractBoard {
-    // The color of the player whose turn it is
+public class Board extends AbstractBoard{
+	private static final long serialVersionUID = 1L;
+	// The color of the player whose turn it is
     private Color currentTurnColor;
     private List<Move> moveHistory = new ArrayList<>();
 

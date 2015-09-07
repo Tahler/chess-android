@@ -1,6 +1,8 @@
 package edu.neumont.pro180.chess.core.model;
 
-public enum Color {
+import java.io.Serializable;
+
+public enum Color implements Serializable{
     LIGHT,
     DARK;
 }
