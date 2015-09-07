@@ -1,9 +1,12 @@
 package edu.neumont.pro180.chess.core.view;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Image;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -15,11 +18,13 @@ import java.util.List;
 import java.util.Map;
 
 import javax.imageio.ImageIO;
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import edu.neumont.pro180.chess.core.controller.Controller;
+import edu.neumont.pro180.chess.core.controller.clientController;
 import edu.neumont.pro180.chess.core.model.Board;
 import edu.neumont.pro180.chess.core.model.Move;
 import edu.neumont.pro180.chess.core.model.Piece;
@@ -40,9 +45,12 @@ public class SwingView extends JFrame implements View{
     List<Tile> avails;
     Map<Character, Image> imgs;
     Listener listener;
+    JPanel southpane;
+    JButton runbtn, conbtn;
 
     public SwingView(){
         setTitle("Chess");
+        setLayout(new BorderLayout());
         add(new JPanel(){
             private static final long serialVersionUID = 1L;
             public JPanel init(int w, int h){
@@ -60,7 +68,8 @@ public class SwingView extends JFrame implements View{
                         mousey = arg0.getY();
                         mouse = getloc(mousex, mousey);
                         repaint();
-                    }});
+                    }
+                });
                 addMouseListener(new MouseListener(){
                     public void mouseClicked(MouseEvent arg0) {
                     	if(listener!=null){
@@ -97,6 +106,7 @@ public class SwingView extends JFrame implements View{
                 g.setColor(getBackground());
                 g.fillRect(0, 0, getWidth(), getHeight());
                 drawBoard(lastboard, g, 0, 0, getWidth(), getHeight(), true);
+                this.paintComponents(g);
             }
             public Tile getloc(int x, int y){
                 Graphics g = getGraphics();
@@ -118,7 +128,31 @@ public class SwingView extends JFrame implements View{
                     return null;
                 }
             }
-        }.init(640,480));
+        }.init(640,480), BorderLayout.CENTER);
+        runbtn = new JButton("Run Server");
+        runbtn.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				listener.changeView(new multiView(SwingView.this, new serverView()));
+				southpane.remove(runbtn);
+				southpane.remove(conbtn);
+				pack();
+			}
+		});
+        conbtn = new JButton("Connect to Server");
+        conbtn.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				new clientController(SwingView.this);
+				southpane.remove(runbtn);
+				southpane.remove(conbtn);
+				pack();
+			}
+		});
+        southpane = new JPanel();
+        southpane.add(runbtn);
+        southpane.add(conbtn);
+        add(southpane, BorderLayout.SOUTH);
         pack();
         setLocationRelativeTo(null);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -286,7 +320,8 @@ public class SwingView extends JFrame implements View{
 	
 
     public static void main(String[] args){
-    	new Controller(new multiView(new SwingView(), new SwingView()));
+//    	new Controller(new multiView(new SwingView(), new SwingView()));
+    	new Controller(new SwingView());
     }
 
 }

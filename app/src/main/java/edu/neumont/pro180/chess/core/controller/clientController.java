@@ -27,7 +27,7 @@ public class clientController implements View.Listener {
     private final AtomicReference<Board> board;
     //Should we validate, or leave that to the real controller?
 //    private final MoveValidator validator;
-    private final View view;
+    private View view;
     private final Thread clientThread;
     private final Queue<byte[]> sendmessage;
     private final AtomicBoolean done;
@@ -118,6 +118,13 @@ public class clientController implements View.Listener {
 			}
 		});
         clientThread.start();
+    }
+    
+    @Override
+    public void changeView(View v){
+    	this.view = v;
+        this.view.setListener(this);
+//        this.view.displayBoard(board);
     }
     
     private Board readBoard(DataInputStream is) throws IOException, ClassNotFoundException{

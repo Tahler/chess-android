@@ -26,6 +26,7 @@ public interface View {
     public void setListener(Listener listener);
 
     public static interface Listener {
+    	void changeView(View v);
         void tileSelected(Tile tile);
         void moveSelected(Move move);
     }

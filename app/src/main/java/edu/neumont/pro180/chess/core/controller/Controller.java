@@ -18,7 +18,7 @@ import edu.neumont.pro180.chess.core.view.View;
 public class Controller implements View.Listener {
     private final Board board;
     private final MoveValidator validator;
-    private final View view;
+    private View view;
 
     public Controller(View view) {
         this.board = new Board();
@@ -28,6 +28,13 @@ public class Controller implements View.Listener {
         this.view.displayBoard(board);
     }
 
+    @Override
+    public void changeView(View v){
+    	this.view = v;
+        this.view.setListener(this);
+        this.view.displayBoard(board);
+    }
+    
     @Override
     public void tileSelected(Tile tile) {
         if (tile != null) {

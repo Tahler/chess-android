@@ -19,6 +19,12 @@ public class multiView implements View{
 		public CatchViewToControl(CATCHTYPE typ){
 			type = typ;
 		}
+	    @Override
+	    public void changeView(View v){//TODO: should we ignore this?
+//	    	this.view = v;
+//	        this.view.setListener(this);
+//	        this.view.displayBoard(board);
+	    }
 		@Override
 		public void tileSelected(Tile tile) {
 			switch(type){
