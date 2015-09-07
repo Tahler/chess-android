@@ -6,6 +6,8 @@ import android.util.AttributeSet;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import org.w3c.dom.Text;
+
 import java.util.List;
 
 import edu.neumont.pro180.chess.R;
@@ -17,15 +19,20 @@ import edu.neumont.pro180.chess.core.model.Piece;
  * It also holds your player's captured pieces and has the voice control button inside of it
  */
 public class PlayerView extends LinearLayout {
-//    private NotificationView notificationView;
-    private TextView notificationView;
+    private TextView centerNotification;
+    private TextView rightNotification;
     private CapturedPieceView capturedPieceView;
+
+    private Color color;
 
     public PlayerView(Context context, AttributeSet attrs) {
         super(context, attrs);
         inflate(context, R.layout.player_view, this);
 
-        notificationView = (TextView) findViewById(R.id.notification_view);
+        centerNotification = (TextView) findViewById(R.id.center_notification);
+        rightNotification = (TextView) findViewById(R.id.right_notification);
+        capturedPieceView = (CapturedPieceView) findViewById(R.id.captured_piece_view);
+
 
         capturedPieceView = (CapturedPieceView) findViewById(R.id.captured_piece_view);
         capturedPieceView.setZOrderOnTop(true);
@@ -46,20 +53,28 @@ public class PlayerView extends LinearLayout {
 
     // NotificationView text changing
     public void resetText() {
-        notificationView.setText("");
+        centerNotification.setText("");
+        rightNotification.setText("");
+        this.invalidate();
+
     }
     public void notifyCheck() {
-        notificationView.setText("Check!");
-//        notificationView.notifyCheck();
+        rightNotification.setText("Check!");
     }
 
     public void notifyGameOver(Color result) {
-        notificationView.setText("Game over");
-//        notificationView.notifyGameOver(result);
+        if (result == null)centerNotification.setText("Stale mate!");
+        else if (result.equals(color)) centerNotification.setText("You win!");
+        else centerNotification.setText("You have been defeated!");
+        rightNotification.setText("");
+        System.out.println("Printing Game over");
     }
 
     public void notifyTurn() {
-        notificationView.setText("Your turn!");
-//        notificationView.notifyTurn();
+        centerNotification.setText("Your turn!");
+    }
+
+    public void setColor(Color color) {
+        this.color = color;
     }
 }

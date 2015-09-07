@@ -73,6 +73,9 @@ public class Controller implements View.Listener {
         if (validator.isInCheck()) view.notifyCheck();
 
         // If this move has now ended the game, end the game.
-        if (validator.isOver()) view.notifyGameOver(validator.getResult());
+        if (validator.isOver()) {
+            view.notifyGameOver(validator.getResult());
+            System.out.println("Game over");
+        }
     }
 }

@@ -5,11 +5,34 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <TextView
+    <LinearLayout
         android:id="@+id/notification_view"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="0.4" />
+        android:layout_weight="0.4"
+        android:orientation="horizontal">
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.33"
+            ></View>
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:id="@+id/center_notification"
+            android:layout_weight="0.33"
+            android:gravity="center"/>
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:id="@+id/right_notification"
+            android:layout_weight="0.33"
+            android:gravity="center"/>
+
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
