@@ -103,7 +103,7 @@ public class serverView implements View{
 			} catch (IOException | ClassNotFoundException e) {
 				e.printStackTrace();
 			}finally {
-				synchronized(clientthreads){clientthreads.remove(Thread.currentThread());}
+				synchronized(clientthreads){clientthreads.remove(this);}
 				try {
 					s.close();
 				} catch (IOException e) {

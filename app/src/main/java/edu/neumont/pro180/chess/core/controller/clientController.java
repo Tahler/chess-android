@@ -7,8 +7,13 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.InterfaceAddress;
+import java.net.NetworkInterface;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Enumeration;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
@@ -44,80 +49,108 @@ public class clientController implements View.Listener {
         clientThread = new Thread(new Runnable(){
 			@Override
 			public void run() {
-				//connect to the server via the broadcast address
-				try(Socket s = new Socket("0.0.0.0", 31415);){
-					DataInputStream is = new DataInputStream(s.getInputStream());
-					DataOutputStream os = new DataOutputStream(s.getOutputStream());
-					char r = (char) is.read();
-					if(r!='B'){
-						System.err.println("Not a Board "+r);
-					}
-					board.set(readBoard(is));
-					view.displayBoard(board.get());
-					while(!done.get()){
-						//receive one message
-						char request = (char) is.read();
-						switch(request){
-						case 'B':{//displayBoard
-							board.set(readBoard(is));
-							view.displayBoard(board.get());
-						}break;
-						case 'C':{//notifyCheck
-							view.notifyCheck();
-						}break;
-						case 'G':{//notifyGameOver
-							ObjectInputStream objstr = new ObjectInputStream(is);
-							Color winner = (Color) objstr.readObject();
-							view.notifyGameOver(winner);
-							done.set(true);
-						}break;
-						case 'H':{//hilightTiles
-							ObjectInputStream objstr = new ObjectInputStream(is);
-							List<Tile> h = (List<Tile>) objstr.readObject();
-				            List<Tile> ends = new ArrayList<>();
-				            for (int i=1; i<h.size(); i++) ends.add(h.get(i));
-							view.highlightTiles(h.get(0), ends);
-						}break;
-						case 'P':{//getPawnPromotion
-							ObjectOutputStream objstr = new ObjectOutputStream(os);
-							objstr.writeObject(view.getPawnPromotion());
-							os.flush();
-						}break;
-						case 'p':{//ping
-							//server was just checking up on us
-						}break;
-						default:
-							System.err.println("Bad request received from server: "+request);
-						}
-						
-						//send many messages
-						Queue<byte[]> msgs = new LinkedList<byte[]>();
-						while(sendmessage.size()>0){
-							msgs.add(sendmessage.poll());
-						}
-						os.writeInt(msgs.size());
-						for(byte[] m : msgs){
-							os.write(m);
-							os.flush();
-							switch(m[0]){
-							case 'T'://tileSelected
-							case 'M'://moveSelected
-							break;
-							default:
-								System.err.println("Sending an unknown message to server, may break communications :"+m[0]);
+				final int serverport = 31415;
+				do{
+					try {
+						for(NetworkInterface ni : Collections.list(NetworkInterface.getNetworkInterfaces())){
+							for(InterfaceAddress ia : ni.getInterfaceAddresses()){
+								if(ia.getAddress().isLoopbackAddress()){
+//									connectAttempt("127.0.0.1", serverport);
+									connectAttempt("0.0.0.0", serverport);
+								}
+								if(ia.getBroadcast()!=null){
+									//connect to the server via the broadcast address
+									connectAttempt(ia.getBroadcast().getHostAddress(), serverport);
+									if(done.get()){
+										break;
+									}
+								}
+							}
+							if(done.get()){
+								break;
 							}
 						}
+					} catch (SocketException e) {
+						e.printStackTrace();
 					}
-				}catch(IOException e){
-					e.printStackTrace();
-				} catch (ClassNotFoundException e) {
-					e.printStackTrace();
-				}
-				
-				
+					if(!done.get()){
+						System.err.println("unable to locate server or connection lost");
+					}
+				}while(!done.get());
 			}
 		});
         clientThread.start();
+    }
+    
+    private void connectAttempt(String address, int port){
+		try(Socket s = new Socket(address, port);){
+			DataInputStream is = new DataInputStream(s.getInputStream());
+			DataOutputStream os = new DataOutputStream(s.getOutputStream());
+			char r = (char) is.read();
+			if(r!='B'){
+				System.err.println("Not a Board "+r);
+			}
+			board.set(readBoard(is));
+			view.displayBoard(board.get());
+			while(!done.get()){
+				//receive one message
+				char request = (char) is.read();
+				switch(request){
+				case 'B':{//displayBoard
+					board.set(readBoard(is));
+					view.displayBoard(board.get());
+				}break;
+				case 'C':{//notifyCheck
+					view.notifyCheck();
+				}break;
+				case 'G':{//notifyGameOver
+					ObjectInputStream objstr = new ObjectInputStream(is);
+					Color winner = (Color) objstr.readObject();
+					view.notifyGameOver(winner);
+					done.set(true);
+				}break;
+				case 'H':{//hilightTiles
+					ObjectInputStream objstr = new ObjectInputStream(is);
+					List<Tile> h = (List<Tile>) objstr.readObject();
+		            List<Tile> ends = new ArrayList<>();
+		            for (int i=1; i<h.size(); i++) ends.add(h.get(i));
+					view.highlightTiles(h.get(0), ends);
+				}break;
+				case 'P':{//getPawnPromotion
+					ObjectOutputStream objstr = new ObjectOutputStream(os);
+					objstr.writeObject(view.getPawnPromotion());
+					os.flush();
+				}break;
+				case 'p':{//ping
+					//server was just checking up on us
+				}break;
+				default:
+					System.err.println("Bad request received from server: "+request);
+				}
+				
+				//send many messages
+				Queue<byte[]> msgs = new LinkedList<byte[]>();
+				while(sendmessage.size()>0){
+					msgs.add(sendmessage.poll());
+				}
+				os.writeInt(msgs.size());
+				for(byte[] m : msgs){
+					os.write(m);
+					os.flush();
+					switch(m[0]){
+					case 'T'://tileSelected
+					case 'M'://moveSelected
+					break;
+					default:
+						System.err.println("Sending an unknown message to server, may break communications :"+m[0]);
+					}
+				}
+			}
+		}catch(IOException e){
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
     }
     
     @Override
