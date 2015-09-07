@@ -250,10 +250,14 @@ public class serverView implements View{
 			}
 		}
 		else{
-			try{
-				clientthreads.get(0).sendmessages.add(msg);
-			}catch(IndexOutOfBoundsException e){
-				//TODO: hang onto the messages until we do have a valid clientthreads.get(0)
+			boolean keeptrying = true;
+			while(keeptrying){
+				try{
+					clientthreads.get(0).sendmessages.add(msg);
+					keeptrying = false;
+				}catch(IndexOutOfBoundsException e){
+					Thread.yield();
+				}
 			}
 		}
 	}
