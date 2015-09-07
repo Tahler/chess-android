@@ -3,6 +3,7 @@ package edu.neumont.pro180.chess.core.view;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
@@ -30,19 +31,91 @@ import edu.neumont.pro180.chess.core.model.Tile;
 
 public class serverView implements View{
 	private final Thread serverThread;
-	private final Thread messagepingThread;
 	private final AtomicBoolean done;
 	private View.Listener listener;
-	private final Queue<byte[]> sendmessages;
+	private final List<ConnectionRunnable> clientthreads;
 	private final AtomicReference<Piece.Type> promote;
 	private final AtomicReference<Board> board;
 	private final List<Tile> hilights;
 	private final AtomicLong lastmessagetime;
 	
 	
+	public class ConnectionRunnable implements Runnable{
+		public final Queue<byte[]> sendmessages;
+		public final Socket s;
+		public ConnectionRunnable(Socket s){
+			this.s = s;
+			this.sendmessages = new LinkedBlockingQueue<byte[]>();
+		}
+		@Override public void run(){
+			synchronized(clientthreads){clientthreads.add(this);}
+			try{
+				DataInputStream is = new DataInputStream(s.getInputStream());
+				DataOutputStream os = new DataOutputStream(s.getOutputStream());
+				writeBoard(board.get(), os);
+				os.flush();
+				while(!s.isClosed() && !done.get()){
+					//send one message
+					byte[] msg;
+					if((msg=sendmessages.poll())==null){//no message to send
+						msg = new byte[]{'p'};//just ping the client
+					}
+					os.write(msg);
+					os.flush();
+					switch(msg[0]){
+					case 'B'://displayBoard
+					case 'C'://notifyCheck
+					case 'G'://notifyGameOver
+					case 'H'://hilightTiles
+					case 'p'://ping
+						break;
+					case 'P':{//getPawnPromotion
+						promote.set(readType(is));
+					}break;
+					default:
+						System.err.println("Sending unknwon message to client :"+msg[0]);
+					}
+					lastmessagetime.set(new Date().getTime());
+
+					//receive many messages
+					for(int i=is.readInt(); i>0; i--){
+						char request = (char) is.read();
+						switch(request){
+						case 'T':{//tileSelected
+							Tile tmptile = readTile(is);
+							//only the first clientthread may select tiles
+							if(clientthreads.get(0)==this){listener.tileSelected(tmptile);}
+						}break;
+						case 'M':{//moveSelected
+							Move tmpmove = readMove(is);
+							//only the first clientthread may make moves
+							if(clientthreads.get(0)==this){listener.moveSelected(tmpmove);}
+						}break;
+						default:
+							System.err.println("Bad request received from client: "+request);
+						}
+						lastmessagetime.set(new Date().getTime());
+					}
+					Thread.yield();
+				}
+			}catch(EOFException e){
+				//disconnected
+			} catch (IOException | ClassNotFoundException e) {
+				e.printStackTrace();
+			}finally {
+				synchronized(clientthreads){clientthreads.remove(Thread.currentThread());}
+				try {
+					s.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+	
 	public serverView(){
 		done = new AtomicBoolean(false);
-		sendmessages = new LinkedBlockingQueue<byte[]>();
+		clientthreads = new ArrayList<ConnectionRunnable>();
 		promote = new AtomicReference<Piece.Type>(null);
 		board = new AtomicReference<Board>(null);
 		hilights = new ArrayList<Tile>();
@@ -52,68 +125,11 @@ public class serverView implements View{
 			public void run() {
 				try(ServerSocket ss = new ServerSocket(31415);){
 					while(!done.get()){
-						//only accept one client at a time, if he disconnects another may finish the game for him
-						try(Socket s = ss.accept();){
-							DataInputStream is = new DataInputStream(s.getInputStream());
-							DataOutputStream os = new DataOutputStream(s.getOutputStream());
-							writeBoard(board.get(), os);
-							os.flush();
-							while(!s.isClosed()){
-								//send one message
-								while(sendmessages.size()==0){
-									Thread.yield();
-								}
-								byte[] msg = sendmessages.poll();
-								os.write(msg);
-								os.flush();
-								switch(msg[0]){
-								case 'B'://displayBoard
-								case 'C'://notifyCheck
-								case 'G'://notifyGameOver
-								case 'H'://hilightTiles
-								case 'p'://ping
-								break;
-								case 'P':{//getPawnPromotion
-									promote.set(readType(is));
-								}break;
-								default:
-									System.err.println("Sending unknwon message to client :"+msg[0]);
-								}
-								lastmessagetime.set(new Date().getTime());
-								
-								//receive many messages
-								for(int i=is.readInt(); i>0; i--){
-									char request = (char) is.read();
-									switch(request){
-									case 'T':{//tileSelected
-										listener.tileSelected(readTile(is));
-									}break;
-									case 'M':{//moveSelected
-										listener.moveSelected(readMove(is));
-									}break;
-									/*
-									//We could have these here to allow the clientController to query us on the current state.
-									case 'B':{//displayBoard
-									}break;
-									case 'C':{//notifyCheck
-									}break;
-									case 'G':{//notifyGameOver
-									}break;
-									case 'H':{//hilightTiles
-									}break;
-									case 'P':{//getPawnPromotion
-									}break;
-									case 'p':{//ping
-										//just check-up on the client
-									}break;
-									 */
-									default:
-										System.err.println("Bad request received from client: "+request);
-									}
-									lastmessagetime.set(new Date().getTime());
-								}
-							}
-						}catch(IOException | ClassNotFoundException e){
+						Socket s = null;
+						try{
+							s = ss.accept();//we close s in the ConnectionRunnable, so dont close it here
+							new Thread(new ConnectionRunnable(s)).start();
+						}catch(IOException e){
 							e.printStackTrace();
 						}
 					}
@@ -123,24 +139,6 @@ public class serverView implements View{
 			}
 		});
 		serverThread.start();
-		messagepingThread = new Thread(new Runnable(){
-			public static final int PINGWAIT = 500;
-			public static final int PINGSLEEP = PINGWAIT;
-			@Override
-			public void run() {
-				while(!done.get()){
-					if(sendmessages.size()==0 && new Date().getTime()-lastmessagetime.get() > PINGWAIT){
-						sendmessages.add(new byte[]{'p'});
-					}
-					try {
-						Thread.sleep(PINGSLEEP);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
-				}
-			}
-		});
-		messagepingThread.start();
 	}
 	
 	private void writeBoard(Board b, OutputStream os) throws IOException{
@@ -186,14 +184,14 @@ public class serverView implements View{
 		ByteArrayOutputStream bytstr = new ByteArrayOutputStream();
 		try {
 			writeBoard(pieces, bytstr);
-			sendmessages.add(bytstr.toByteArray());
+			sendmessage(bytstr.toByteArray());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 	@Override
 	public void notifyCheck() {
-		sendmessages.add(new byte[]{'C'});
+		sendmessage(new byte[]{'C'});
 	}
 	@Override
 	public void notifyGameOver(Color result) {
@@ -202,7 +200,7 @@ public class serverView implements View{
 		try {
 			bytstr.write('G');
 			writeColor(result, bytstr);
-			sendmessages.add(bytstr.toByteArray());
+			sendmessage(bytstr.toByteArray());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -217,7 +215,7 @@ public class serverView implements View{
 			try {
 				bytstr.write('H');
 				writeTileList(hilights, bytstr);
-				sendmessages.add(bytstr.toByteArray());
+				sendmessage(bytstr.toByteArray());
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -226,10 +224,16 @@ public class serverView implements View{
 	@Override
 	public Type getPawnPromotion() {
 		promote.set(null);
-		sendmessages.add(new byte[]{'P'});
+		sendmessage(new byte[]{'P'});
 		Type ret;
+		long lasttime = new Date().getTime();
+		final int reaskTime = 5000;
 		//wait for a response from the client
 		while((ret=promote.get())==null){
+			if(new Date().getTime()-lasttime>reaskTime){
+				sendmessage(new byte[]{'P'});
+				lasttime = new Date().getTime();
+			}
 			Thread.yield();
 		}
 		return ret;
@@ -239,6 +243,21 @@ public class serverView implements View{
 		this.listener = listener;
 	}
 	
+	private void sendmessage(byte[] msg){
+		if(msg[0]=='B'||msg[0]=='C'||msg[0]=='G'){
+			for(ConnectionRunnable r : clientthreads){
+				r.sendmessages.add(msg);
+			}
+		}
+		else{
+			try{
+				clientthreads.get(0).sendmessages.add(msg);
+			}catch(IndexOutOfBoundsException e){
+				//TODO: hang onto the messages until we do have a valid clientthreads.get(0)
+			}
+		}
+	}
+	
 	
 	public static void main(String[] args){
     	new Controller(new multiView(new SwingView(), new serverView()));
@@ -246,6 +265,7 @@ public class serverView implements View{
 			Thread.sleep(1000);
 		} catch (InterruptedException e) {
 		}
+    	clientController.main(args);
     	clientController.main(args);
 	}
 
