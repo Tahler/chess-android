@@ -7,13 +7,10 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.net.InterfaceAddress;
-import java.net.NetworkInterface;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
 import java.net.Socket;
-import java.net.SocketException;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Enumeration;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
@@ -50,28 +47,26 @@ public class clientController implements View.Listener {
 			@Override
 			public void run() {
 				final int serverport = 31415;
+				DatagramSocket udpsock = null;
 				do{
 					try {
-						for(NetworkInterface ni : Collections.list(NetworkInterface.getNetworkInterfaces())){
-							for(InterfaceAddress ia : ni.getInterfaceAddresses()){
-								if(ia.getAddress().isLoopbackAddress()){
-//									connectAttempt("127.0.0.1", serverport);
-									connectAttempt("0.0.0.0", serverport);
-								}
-								if(ia.getBroadcast()!=null){
-									//connect to the server via the broadcast address
-									connectAttempt(ia.getBroadcast().getHostAddress(), serverport);
-									if(done.get()){
-										break;
-									}
-								}
-							}
-							if(done.get()){
-								break;
-							}
+						udpsock = new DatagramSocket(serverport);
+						byte[] udpbuf = new byte[9];//CHESS+portInteger
+						DatagramPacket udppack = new DatagramPacket(udpbuf, udpbuf.length);
+						udpsock.receive(udppack);
+						ByteArrayInputStream bytstr = new ByteArrayInputStream(udpbuf);
+						DataInputStream datstr = new DataInputStream(bytstr);
+						if(datstr.read()=='C' && datstr.read()=='H' && datstr.read()=='E' && datstr.read()=='S' && datstr.read()=='S'){
+							Integer port = datstr.readInt();
+							System.out.println("Attempting to connect to "+udppack.getAddress().getHostAddress()+" on port "+port);
+							connectAttempt(udppack.getAddress().getHostAddress(), port);
 						}
-					} catch (SocketException e) {
+					} catch (IOException e) {
 						e.printStackTrace();
+					}finally{
+						if(udpsock!=null){
+							udpsock.close();
+						}
 					}
 					if(!done.get()){
 						System.err.println("unable to locate server or connection lost");
@@ -147,7 +142,8 @@ public class clientController implements View.Listener {
 				}
 			}
 		}catch(IOException e){
-			e.printStackTrace();
+//			e.printStackTrace();
+			System.err.println(address+" IOException "+e.getLocalizedMessage());
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}

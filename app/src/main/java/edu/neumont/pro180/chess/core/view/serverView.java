@@ -9,14 +9,21 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InterfaceAddress;
+import java.net.NetworkInterface;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -31,6 +38,8 @@ import edu.neumont.pro180.chess.core.model.Tile;
 
 public class serverView implements View{
 	private final Thread serverThread;
+	private final AtomicInteger serverPort;
+	private final Thread udpBroadcast;
 	private final AtomicBoolean done;
 	private View.Listener listener;
 	private final List<ConnectionRunnable> clientthreads;
@@ -120,10 +129,12 @@ public class serverView implements View{
 		board = new AtomicReference<Board>(null);
 		hilights = new ArrayList<Tile>();
 		lastmessagetime = new AtomicLong(-1);
+		serverPort = new AtomicInteger(-1);
 		serverThread = new Thread(new Runnable(){
 			@Override
 			public void run() {
-				try(ServerSocket ss = new ServerSocket(31415);){
+				try(ServerSocket ss = new ServerSocket(0);){
+					serverPort.set(ss.getLocalPort());
 					while(!done.get()){
 						Socket s = null;
 						try{
@@ -139,6 +150,54 @@ public class serverView implements View{
 			}
 		});
 		serverThread.start();
+		
+		udpBroadcast = new Thread(new Runnable(){
+			@Override
+			public void run() {
+				while(!done.get()){
+					Integer portnum;
+					if((portnum=serverPort.get())>=0){
+						ByteArrayOutputStream udpbuf = new ByteArrayOutputStream();
+						try{
+						DataOutputStream datstr = new DataOutputStream(udpbuf);
+						datstr.write('C');
+						datstr.write('H');
+						datstr.write('E');
+						datstr.write('S');
+						datstr.write('S');
+						datstr.writeInt(portnum);
+						}catch(IOException e){
+							e.printStackTrace();
+						}
+						try {
+							for(NetworkInterface ni : Collections.list(NetworkInterface.getNetworkInterfaces())){
+								for(InterfaceAddress ia : ni.getInterfaceAddresses()){
+									if(ia.getBroadcast()!=null){
+										DatagramPacket udppack = new DatagramPacket(udpbuf.toByteArray(), udpbuf.size(), ia.getBroadcast(), 31415);
+										
+										try(DatagramSocket udpsock = new DatagramSocket()){
+											udpsock.send(udppack);
+										} catch (IOException e) {
+											System.err.println("UDP server IOException "+e.getLocalizedMessage());
+//											e.printStackTrace();
+										}
+									}
+								}
+							}
+						} catch (SocketException e) {
+							System.err.println("UDP server SocketException "+e.getLocalizedMessage());
+//							e.printStackTrace();
+						}
+					}
+					try {
+						Thread.sleep(1000);
+					} catch (InterruptedException e) {
+//						e.printStackTrace();
+					}
+				}
+			}
+		});
+		udpBroadcast.start();
 	}
 	
 	private void writeBoard(Board b, OutputStream os) throws IOException{
