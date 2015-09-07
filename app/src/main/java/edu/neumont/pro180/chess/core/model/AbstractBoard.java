@@ -60,6 +60,11 @@ public abstract class AbstractBoard implements Serializable{
 
         lightKingLocation = otherBoard.lightKingLocation;
         darkKingLocation = otherBoard.darkKingLocation;
+        
+        lightCapturedPieces = new ArrayList<>();
+        darkCapturedPieces = new ArrayList<>();
+        lightCapturedPieces.addAll(otherBoard.lightCapturedPieces);
+        darkCapturedPieces.addAll(otherBoard.darkCapturedPieces);
     }
 
     public Piece getPieceAt(Tile location) {
