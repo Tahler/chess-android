@@ -39,6 +39,7 @@ public class ChessActivity extends Activity {
         PlayerView dark = (PlayerView) findViewById(R.id.dark_player_view);
         dark.getLayoutParams().width = size.x;
         dark.getLayoutParams().height = playerViewHeight;
+        dark.rotate();
 
         // Attach the player views to the board
         boardView.setLightPlayerView(light);

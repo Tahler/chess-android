@@ -35,6 +35,13 @@ public class PlayerView extends LinearLayout {
 //        voiceControl = (Button) findViewById(R.id.voice_control_button);
     }
 
+    public void rotate() {
+        this.setRotation(180f);
+        capturedPieceView.setRotation(180f);
+        capturedPieceView.rotate();
+    }
+
+
     // CapturedPieceView
     public void setCapturedPieces(List<Piece> capturedPieces) {
         capturedPieceView.setCapturedPieces(capturedPieces);

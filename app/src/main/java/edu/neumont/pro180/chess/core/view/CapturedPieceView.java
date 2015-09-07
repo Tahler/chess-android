@@ -5,7 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Paint;
+import android.graphics.Matrix;
 import android.support.annotation.NonNull;
 import android.util.AttributeSet;
 import android.view.SurfaceHolder;
@@ -21,20 +21,19 @@ public class CapturedPieceView extends SurfaceView {
     private SurfaceHolder holder;
     private static int displaySize;
     private List<Piece> capturedPieces;
-    private Paint paint;
+    private int rotation = 0;
+    boolean isFlipped = false;
 
     public CapturedPieceView(Context context, AttributeSet attrs) {
         super(context, attrs);
         capturedPieces = new ArrayList<>();
         holder = getHolder();
-
         holder.addCallback(new SurfaceHolder.Callback() {
             @Override
             public void surfaceCreated(SurfaceHolder surfaceHolder) {
                 Canvas canvas = holder.lockCanvas(null);
-
-                displaySize = (int) (getHeight()/2);
-                paint = new Paint();
+                displaySize = getHeight()/2;
+                if (displaySize > getWidth()/8) displaySize = getWidth()/8;
                 holder.unlockCanvasAndPost(canvas);
                 draw();
             }
@@ -54,11 +53,11 @@ public class CapturedPieceView extends SurfaceView {
         super.draw(canvas);
         canvas.drawColor(Color.LTGRAY);
         drawPieces(canvas);
-        canvas.rotate(180);
     }
 
     private void drawPieces(Canvas canvas) {
-        int offset = (getWidth() - displaySize*8)/2;
+        int xOffset = (getWidth() - displaySize*8)/2;
+        int yOffset = (getHeight() - displaySize*2)/2;
         int[] xPos = {0, 0, displaySize, displaySize*2, displaySize*3, displaySize*4};
         int y;
         int x;
@@ -67,12 +66,12 @@ public class CapturedPieceView extends SurfaceView {
 
             Bitmap scaled = Bitmap.createScaledBitmap(unscaled, displaySize, displaySize, false);
             if (p.getType().equals(Piece.Type.PAWN)) {
-                y = 0;
+                y = (!isFlipped) ? 0 : displaySize;
                 x = xPos[0];
                 xPos[0] += displaySize;
             }
             else {
-                y = displaySize;
+                y = (!isFlipped) ? displaySize : 0;
                 switch (p.getType()) {
                     case ROOK:
                         x = xPos[1];
@@ -97,8 +96,20 @@ public class CapturedPieceView extends SurfaceView {
                         x = -1;
                 }
             }
-            canvas.drawBitmap(scaled, offset + x, y, paint);
+            drawImage(canvas, scaled, xOffset + x, yOffset + y, rotation);
         }
+    }
+
+    public void drawImage(Canvas canvas, Bitmap bitmap, int x, int y, int rotationAngle){
+        Matrix matrix = new Matrix();
+        matrix.postRotate(rotationAngle, bitmap.getWidth()/2, bitmap.getHeight()/2);
+        matrix.postTranslate(x, y);
+        canvas.drawBitmap(bitmap, matrix, null);
+    }
+
+    public void rotate() {
+        this.rotation += 180;
+        isFlipped = !isFlipped;
     }
 
     /**
