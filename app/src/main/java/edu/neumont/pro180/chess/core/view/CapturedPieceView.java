@@ -87,7 +87,7 @@ public class CapturedPieceView extends SurfaceView {
                         break;
                     case QUEEN:
                         x = xPos[4];
-                        xPos[4] += 5;
+                        xPos[4] += displaySize/10;
                         break;
                     case KING:
                         x = xPos[5];
