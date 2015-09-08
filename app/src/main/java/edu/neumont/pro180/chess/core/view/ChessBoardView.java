@@ -374,9 +374,9 @@ public class ChessBoardView extends SurfaceView implements View, android.view.Vi
     }
 
     @Override
-    public void notifyInvalidMove() {
-        lightPlayerView.notifyInvalidMove();
-        darkPlayerView.notifyInvalidMove();
+    public void notifyInvalidMove(Move move) {
+        lightPlayerView.notifyInvalidMove(move);
+        darkPlayerView.notifyInvalidMove(move);
     }
 
     public void setLightPlayerView(PlayerView lightPlayerView) {

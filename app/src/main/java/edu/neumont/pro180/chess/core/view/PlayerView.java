@@ -13,6 +13,7 @@ import java.util.List;
 import edu.neumont.pro180.chess.R;
 import edu.neumont.pro180.chess.core.controller.SpeechRequestListener;
 import edu.neumont.pro180.chess.core.model.Color;
+import edu.neumont.pro180.chess.core.model.Move;
 import edu.neumont.pro180.chess.core.model.Piece;
 
 /**
@@ -104,7 +105,7 @@ public class PlayerView extends LinearLayout {
         this.speechRequestListener = speechRequestListener;
     }
 
-    public void notifyInvalidMove() {
-        if (isTurn) centerNotification.setText("That move is invalid, try again.");
+    public void notifyInvalidMove(Move move) {
+        if (isTurn) centerNotification.setText("The move from " + move.getStart() + " to " + move.getEnd() + " is invalid, try again.");
     }
 }

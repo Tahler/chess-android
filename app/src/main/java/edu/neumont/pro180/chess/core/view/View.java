@@ -29,7 +29,7 @@ public interface View {
 
     void notifySpeechError();
 
-    void notifyInvalidMove();
+    void notifyInvalidMove(Move move);
 
     interface Listener {
     	void changeView(View v);
