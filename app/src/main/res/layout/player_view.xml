@@ -10,7 +10,10 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="0.4"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:background="@drawable/slate_background"
+
+        >
 
         <View
             android:layout_width="0dp"
@@ -23,14 +26,16 @@
             android:layout_height="match_parent"
             android:id="@+id/center_notification"
             android:layout_weight="0.33"
-            android:gravity="center"/>
+            android:gravity="center"
+            android:textColor="#FFF"/>
 
         <TextView
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:id="@+id/right_notification"
             android:layout_weight="0.33"
-            android:gravity="center"/>
+            android:gravity="center"
+            android:text="#FFF"/>
 
     </LinearLayout>
 
