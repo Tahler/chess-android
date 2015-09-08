@@ -28,6 +28,25 @@ public class ChessActivity extends Activity implements SpeechRequestListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chess);
 
+//        Button button = new Button();
+//        // Creating
+//        button.setOnClickListener(
+//                new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View v) {
+//                        // listener.changeView(new MultiView(currentview, new ServerView))
+//                    }
+//                }
+//        );
+//        button.setOnClickListener(
+//                new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View v) {
+//                        // new ClientController(currentview)
+//                    }
+//                }
+//        );
+
         // Center the board
         Display display = getWindowManager().getDefaultDisplay();
         Point size = new Point();

@@ -13,6 +13,7 @@ import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import edu.neumont.pro180.chess.R;
@@ -43,7 +44,7 @@ public class ChessBoardView extends SurfaceView implements View, android.view.Vi
     private static int tileSize;
     private Piece[][] pieces; // cached, set from the controller call
     private Tile selectedTile; // Colored in blue
-    private List<Tile> highlightedTiles; // Colored in yellow
+    private List<Tile> highlightedTiles = new ArrayList<>(); // Colored in yellow
 
     public ChessBoardView(Context context, AttributeSet attrs) {
         super(context, attrs);

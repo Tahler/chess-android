@@ -26,6 +26,10 @@ public class Controller implements View.Listener {
         this.view = view;
         this.view.setListener(this);
         this.view.displayBoard(board);
+
+
+//        changeView(new multiView(view, new serverView()));
+        new clientController(view);
     }
 
     @Override
