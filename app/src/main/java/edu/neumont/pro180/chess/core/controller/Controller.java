@@ -86,4 +86,8 @@ public class Controller implements View.Listener {
             System.out.println("Game over");
         }
     }
+
+    public void notifySpeechError() {
+        view.notifySpeechError();
+    }
 }

@@ -27,6 +27,8 @@ public interface View {
 
     void setListener(Listener listener);
 
+    void notifySpeechError();
+
     interface Listener {
     	void changeView(View v);
         void tileSelected(Tile tile);

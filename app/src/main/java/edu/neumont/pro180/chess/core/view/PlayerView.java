@@ -28,6 +28,8 @@ public class PlayerView extends LinearLayout {
     private ImageButton voiceControlButton;
 
     private Color color;
+    // true if it is this player's turn
+    private boolean isTurn;
 
     public PlayerView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -45,7 +47,8 @@ public class PlayerView extends LinearLayout {
         voiceControlButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (speechRequestListener != null) speechRequestListener.speechRequested();
+                // Only pressed if it is this player's turn
+                if (speechRequestListener != null && isTurn) speechRequestListener.speechRequested();
             }
         });
     }
@@ -66,6 +69,8 @@ public class PlayerView extends LinearLayout {
     public void resetText() {
         centerNotification.setText("");
         rightNotification.setText("");
+        isTurn = false;
+        voiceControlButton.setEnabled(false);
         this.invalidate();
 
     }
@@ -82,7 +87,13 @@ public class PlayerView extends LinearLayout {
     }
 
     public void notifyTurn() {
+        isTurn = true;
+        voiceControlButton.setEnabled(true);
         centerNotification.setText("Your turn!");
+    }
+
+    public void notifySpeechError() {
+        if (isTurn) centerNotification.setText("Error interpreting voice, try again.");
     }
 
     public void setColor(Color color) {

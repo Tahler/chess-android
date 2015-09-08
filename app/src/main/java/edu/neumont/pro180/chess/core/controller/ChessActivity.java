@@ -93,6 +93,8 @@ public class ChessActivity extends Activity implements SpeechRequestListener {
             if (m != null) {
                 Log.d("spoken_text", m.toString());
                 controller.moveSelected(m);
+            } else {
+                controller.notifySpeechError();
             }
         }
         super.onActivityResult(requestCode, resultCode, data);

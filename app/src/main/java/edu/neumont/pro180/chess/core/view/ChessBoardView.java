@@ -121,6 +121,7 @@ public class ChessBoardView extends SurfaceView implements View, android.view.Vi
                     paint);
         }
 
+        // TODO: for some reason, 8 is not drawn above in the numbering, so it is drawn here
         canvas.drawText(String.valueOf(8), textPadding, bounds.height() + textPadding, paint);
     }
 
@@ -364,6 +365,12 @@ public class ChessBoardView extends SurfaceView implements View, android.view.Vi
     @Override
     public void setListener(Listener listener) {
         this.listener = listener;
+    }
+
+    @Override
+    public void notifySpeechError() {
+        lightPlayerView.notifySpeechError();
+        darkPlayerView.notifySpeechError();
     }
 
     public void setLightPlayerView(PlayerView lightPlayerView) {
