@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -87,7 +88,20 @@ public class ChessBoardView extends SurfaceView implements View, android.view.Vi
     }
 
     private void drawTiles(Canvas canvas) {
+        int textPadding = 5;
+        paint.setTextSize(24f);
+        paint.setFakeBoldText(true);
+
+        Rect bounds = new Rect();
+        paint.getTextBounds("A", 0, 1, bounds);
+
         for (int i = 0; i < 8; i++) { // horizontal
+            paint.setColor(Color.BLACK);
+
+            // Numbering
+            int number = 8 - i;
+            canvas.drawText(String.valueOf(number), textPadding, i * tileSize + bounds.height() + textPadding, paint);
+
             for (int j = 0; j < 8; j++) { // vertical
                 paint.setColor(((i + j) % 2 == 0) ? Color.WHITE : Color.GRAY);
                 canvas.drawRect(
@@ -97,7 +111,17 @@ public class ChessBoardView extends SurfaceView implements View, android.view.Vi
                         j * tileSize + tileSize,
                         paint);
             }
+
+            paint.setColor(Color.BLACK);
+            // Lettering
+            char letter = (char) (i + 65);
+            canvas.drawText(String.valueOf(letter),
+                    i * tileSize + tileSize - textPadding - bounds.width(),
+                    tileSize * 8 - textPadding,
+                    paint);
         }
+
+        canvas.drawText(String.valueOf(8), textPadding, bounds.height() + textPadding, paint);
     }
 
     private void drawHighlights(Canvas canvas) {

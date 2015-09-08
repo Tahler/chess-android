@@ -19,6 +19,7 @@ import edu.neumont.pro180.chess.core.view.PlayerView;
  * Simply wraps the Controller in an activity, so that it may run on Android.
  */
 public class ChessActivity extends Activity implements SpeechRequestListener {
+    private Controller controller;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,7 +55,7 @@ public class ChessActivity extends Activity implements SpeechRequestListener {
         boardView.setDarkPlayerView(dark);
 
         // Start a new controller with access to the boardView
-        new Controller(boardView);
+        controller = new Controller(boardView);
     }
 
     @Override
@@ -83,7 +84,9 @@ public class ChessActivity extends Activity implements SpeechRequestListener {
             List<String> results = data.getStringArrayListExtra(
                     RecognizerIntent.EXTRA_RESULTS);
             String spokenText = results.get(0);
-            // Do something with spokenText
+            System.out.println(spokenText);
+            // do stuff with the spoken text
+//            controller.moveSelected(new Move());
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
