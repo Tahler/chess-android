@@ -12,7 +12,9 @@ public interface View {
 
     public void displayBoard(Board board);
 
-    public void notifyCheck();
+    void notifyLightIsInCheck();
+
+    void notifyDarkIsInCheck();
 
     /**
      * @param result The color of the winner, or null if the game resulted as a stalemate

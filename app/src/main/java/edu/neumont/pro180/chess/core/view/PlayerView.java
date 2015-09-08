@@ -1,133 +1,78 @@
 package edu.neumont.pro180.chess.core.view;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
+import android.graphics.PixelFormat;
 import android.util.AttributeSet;
-import android.view.SurfaceHolder;
-import android.view.SurfaceView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import edu.neumont.pro180.chess.R;
+import edu.neumont.pro180.chess.core.model.Color;
 import edu.neumont.pro180.chess.core.model.Piece;
 
-public class PlayerView extends SurfaceView {
-    private SurfaceHolder holder;
-    private static int displaySize;
-    private List<Piece> capturedPieces;
-    private Paint paint;
-    private edu.neumont.pro180.chess.core.model.Color c;
+/**
+ * The view in front of the board for the player.  It shows notifications such as "Your turn!"
+ * It also holds your player's captured pieces and has the voice control button inside of it
+ */
+public class PlayerView extends LinearLayout {
+    private TextView centerNotification;
+    private TextView rightNotification;
+    private CapturedPieceView capturedPieceView;
+
+    private Color color;
 
     public PlayerView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        capturedPieces = new ArrayList<>();
-        holder = getHolder();
+        inflate(context, R.layout.player_view, this);
 
-        holder.addCallback(new SurfaceHolder.Callback() {
-            @Override
-            public void surfaceCreated(SurfaceHolder surfaceHolder) {
-                Canvas canvas = holder.lockCanvas(null);
-                displaySize = (int) (getWidth() / 8.0 * 0.60D);
-                paint = new Paint();
-                holder.unlockCanvasAndPost(canvas);
-                draw();
-            }
-
-            @Override
-            public void surfaceChanged(SurfaceHolder surfaceHolder, int i, int i2, int i3) {
-            }
-
-            @Override
-            public void surfaceDestroyed(SurfaceHolder surfaceHolder) {
-            }
-        });
+        centerNotification = (TextView) findViewById(R.id.center_notification);
+        rightNotification = (TextView) findViewById(R.id.right_notification);
+        capturedPieceView = (CapturedPieceView) findViewById(R.id.captured_piece_view);
 
 
+        capturedPieceView = (CapturedPieceView) findViewById(R.id.captured_piece_view);
+        capturedPieceView.setZOrderOnTop(true);
+        capturedPieceView.getHolder().setFormat(PixelFormat.TRANSPARENT);
     }
 
-    @Override
-    public void draw(Canvas canvas) {
-
-        canvas.drawColor(Color.LTGRAY);
-
-        drawPieces(canvas);
+    public void rotate() {
+        this.setRotation(180f);
+        capturedPieceView.setRotation(180f);
+        capturedPieceView.rotate();
     }
 
-    private void drawPieces(Canvas canvas) {
-        int count = 0;
-        int y = 0;
-        int overflow = (getRootView().getWidth() / displaySize) - 1;
-        for (Piece p : capturedPieces) {
-            if (p.getColor() == c) {
-                if (count > overflow) {
-                    y += displaySize;
-                    count = 0;
-                }
-                Bitmap unscaled = getPieceBitMap(p);
-                Bitmap scaled = Bitmap.createScaledBitmap(unscaled, displaySize, displaySize, false);
-                canvas.drawBitmap(scaled, count * displaySize, y, paint);
-                count++;
-            }
-        }
-    }
 
-    /**
-     * @return An immutable Bitmap representing the piece
-     */
-    private Bitmap getPieceBitMap(Piece piece) {
-        if (piece.getColor().equals(edu.neumont.pro180.chess.core.model.Color.LIGHT)) {
-            switch (piece.getType()) {
-                case PAWN:
-                    return BitmapFactory.decodeResource(getResources(), R.drawable.pl);
-                case ROOK:
-                    return BitmapFactory.decodeResource(getResources(), R.drawable.rl);
-                case KNIGHT:
-                    return BitmapFactory.decodeResource(getResources(), R.drawable.nl);
-                case BISHOP:
-                    return BitmapFactory.decodeResource(getResources(), R.drawable.bl);
-                case QUEEN:
-                    return BitmapFactory.decodeResource(getResources(), R.drawable.ql);
-                case KING:
-                    return BitmapFactory.decodeResource(getResources(), R.drawable.kl);
-            }
-        } else {
-            switch (piece.getType()) {
-                case PAWN:
-                    return BitmapFactory.decodeResource(getResources(), R.drawable.pd);
-                case ROOK:
-                    return BitmapFactory.decodeResource(getResources(), R.drawable.rd);
-                case KNIGHT:
-                    return BitmapFactory.decodeResource(getResources(), R.drawable.nd);
-                case BISHOP:
-                    return BitmapFactory.decodeResource(getResources(), R.drawable.bd);
-                case QUEEN:
-                    return BitmapFactory.decodeResource(getResources(), R.drawable.qd);
-                case KING:
-                    return BitmapFactory.decodeResource(getResources(), R.drawable.kd);
-            }
-        }
-        return null;
-    }
-
-    public void setC(edu.neumont.pro180.chess.core.model.Color c) {
-        this.c = c;
-    }
-
+    // CapturedPieceView
     public void setCapturedPieces(List<Piece> capturedPieces) {
-        this.capturedPieces = capturedPieces;
-        draw();
+        capturedPieceView.setCapturedPieces(capturedPieces);
     }
 
-    private void draw() {
-        Canvas canvas = holder.lockCanvas();
-        if (canvas != null) {
-            draw(canvas);
-            holder.unlockCanvasAndPost(canvas);
-        }
+    // NotificationView text changing
+    public void resetText() {
+        centerNotification.setText("");
+        rightNotification.setText("");
+        this.invalidate();
+
+    }
+    public void notifyCheck() {
+        rightNotification.setText("Check!");
+    }
+
+    public void notifyGameOver(Color result) {
+        if (result == null)centerNotification.setText("Stale mate!");
+        else if (result.equals(color)) centerNotification.setText("You win!");
+        else centerNotification.setText("You lose!");
+        rightNotification.setText("");
+        System.out.println("Printing Game over");
+    }
+
+    public void notifyTurn() {
+        centerNotification.setText("Your turn!");
+    }
+
+    public void setColor(Color color) {
+        this.color = color;
     }
 }

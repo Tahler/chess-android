@@ -1,14 +1,12 @@
 package edu.neumont.pro180.chess.core.view;
 
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Rect;
+import android.graphics.RadialGradient;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -23,6 +21,9 @@ import edu.neumont.pro180.chess.core.model.Move;
 import edu.neumont.pro180.chess.core.model.Piece;
 import edu.neumont.pro180.chess.core.model.Tile;
 
+/**
+ * Extends SurfaceView, which allows for canvas drawing and makes this Android specific
+ */
 public class ChessBoardView extends SurfaceView implements View, android.view.View.OnTouchListener {
     // For talking to the controller
     private View.Listener listener;
@@ -30,6 +31,9 @@ public class ChessBoardView extends SurfaceView implements View, android.view.Vi
     // For drawing
     private SurfaceHolder holder;
     private Paint paint;
+
+    private Bitmap yellowHighlightBitmap;
+    private Bitmap blueHighlightBitmap;
 
     // The two PlayerViews above and below the board.
     private PlayerView lightPlayerView;
@@ -51,14 +55,34 @@ public class ChessBoardView extends SurfaceView implements View, android.view.Vi
                 Log.d("TILE_SIZE", String.valueOf(tileSize));
 
                 paint = new Paint();
+
+                Bitmap unscaledYellow = BitmapFactory.decodeResource(getResources(), R.drawable.yellow_tile);
+                yellowHighlightBitmap = Bitmap.createScaledBitmap(unscaledYellow, tileSize, tileSize, false);
+
+                Bitmap unscaledBlue = BitmapFactory.decodeResource(getResources(), R.drawable.blue_tile);
+                blueHighlightBitmap = Bitmap.createScaledBitmap(unscaledBlue, tileSize, tileSize, false);
+
                 draw();
             }
 
-            public void surfaceChanged(SurfaceHolder surfaceHolder, int i, int i2, int i3) {}
+            public void surfaceChanged(SurfaceHolder surfaceHolder, int i, int i2, int i3) {
+            }
 
-            public void surfaceDestroyed(SurfaceHolder surfaceHolder) {}
+            public void surfaceDestroyed(SurfaceHolder surfaceHolder) {
+            }
         });
         setOnTouchListener(this);
+
+//        inflate(context, R.layout.player_view, null);
+//
+        // Set voice control button action
+//        findViewById(R.id.voice_control_button)
+//                .setOnClickListener(new OnClickListener() {
+//                    @Override
+//                    public void onClick(android.view.View v) {
+//                         TODO: all voice control actions
+//                    }
+//                });
     }
 
     @Override
@@ -67,7 +91,6 @@ public class ChessBoardView extends SurfaceView implements View, android.view.Vi
             System.out.println("Canvas was null");
             return;
         }
-        Log.d("DRAW", "Redrawing the screen");
         canvas.drawColor(Color.BLACK);
 
         drawTiles(canvas);
@@ -90,12 +113,11 @@ public class ChessBoardView extends SurfaceView implements View, android.view.Vi
     }
 
     private void drawHighlights(Canvas canvas) {
-        if (selectedTile != null) highlightTile(selectedTile, Color.BLUE, canvas);
+        if (selectedTile != null) highlightTile(selectedTile, HighlightColor.BLUE, canvas);
         if (highlightedTiles != null) {
             for (Tile end : highlightedTiles) {
-                highlightTile(end, Color.YELLOW, canvas);
+                highlightTile(end, HighlightColor.YELLOW, canvas);
             }
-            // TODO captures in red? might look dumb
         }
     }
 
@@ -166,14 +188,23 @@ public class ChessBoardView extends SurfaceView implements View, android.view.Vi
     public void displayBoard(Board board) {
         this.pieces = board.getPieces();
         Log.d("displayBoard()", "Received new Board");
-        if (board.getCurrentTurnColor().equals(edu.neumont.pro180.chess.core.model.Color.LIGHT)) {
-//            lightPlayerView.notifyTurn();
-        } else {
-//            darkPlayerView.notifyTurn();
-        }
+        turnChange(board.getCurrentTurnColor());
         lightPlayerView.setCapturedPieces(board.getLightCapturedPieces());
         darkPlayerView.setCapturedPieces(board.getDarkCapturedPieces());
         draw();
+    }
+
+    private void turnChange(edu.neumont.pro180.chess.core.model.Color currentTurnColor) {
+        lightPlayerView.resetText();
+        darkPlayerView.resetText();
+        if (currentTurnColor.equals(edu.neumont.pro180.chess.core.model.Color.LIGHT)) {
+            lightPlayerView.notifyTurn();
+
+        } else {
+            darkPlayerView.notifyTurn();
+
+        }
+        this.invalidate();
     }
 
     /**
@@ -188,61 +219,88 @@ public class ChessBoardView extends SurfaceView implements View, android.view.Vi
     }
 
     @Override
-    public void notifyCheck() {
-//        lightPlayerView.notifyCheck();
-//        darkPlayerView.notifyCheck();
-        System.out.println("Check!");
+    public void notifyLightIsInCheck() {
+        lightPlayerView.notifyCheck();
+        this.invalidate();
+    }
+
+    @Override
+    public void notifyDarkIsInCheck() {
+        darkPlayerView.notifyCheck();
+        this.invalidate();
     }
 
     @Override
     public void notifyGameOver(edu.neumont.pro180.chess.core.model.Color result) {
-        // TODO
-        System.out.println((result == null) ? "Stalemate!" : "Checkmate! The winner is " + result + "!");
+        lightPlayerView.notifyGameOver(result);
+        darkPlayerView.notifyGameOver(result);
     }
 
     /**
      * Sets the tiles to be highlighted, then redraws
-     *
      * @param start The starting location
-     * @param ends  A list of possible destinations
+     * @param ends A list of possible destinations
      */
     @Override
     public void highlightTiles(Tile start, List<Tile> ends) {
         Canvas canvas = holder.lockCanvas();
-        // Set the tiles to be highlighted
-        selectedTile = start;
         highlightedTiles = ends;
         draw(canvas);
         holder.unlockCanvasAndPost(canvas);
     }
-
-    /**
-     * Redirected to highlightTile(Tile, int, Canvas) with the canvas argument as the
-     * SurfaceHolder's locked canvas. holder.unlockCanvasAndPost(canvas) is called at the end.
-     */
-    public void highlightTile(Tile tile, int color) {
-        Canvas canvas = holder.lockCanvas();
-        highlightTile(tile, color, canvas);
-        holder.unlockCanvasAndPost(canvas);
+    private void resetHighlights() {
+        selectedTile = null;
+        highlightedTiles.clear();
+        draw();
     }
 
-    public void highlightTile(Tile tile, int color, Canvas canvas) {
-        paint.setColor(Color.BLACK);
-        canvas.drawRect(new Rect(
-                tile.x * tileSize,
-                tile.y * tileSize,
-                tile.x * tileSize + tileSize,
-                tile.y * tileSize + tileSize
-        ), paint);
+    public void highlightTile(Tile tile, HighlightColor color, Canvas canvas) {
+        Bitmap highlightImage = null;
 
-        paint.setColor(color);
-        int borderWidth = 2;
-        canvas.drawRect(new Rect(
-                tile.x * tileSize + borderWidth,
-                tile.y * tileSize + borderWidth,
-                tile.x * tileSize + tileSize - borderWidth,
-                tile.y * tileSize + tileSize - borderWidth
-        ), paint);
+        switch (color) {
+            case YELLOW:
+                highlightImage = yellowHighlightBitmap;
+                break;
+            case BLUE:
+                highlightImage = blueHighlightBitmap;
+                break;
+        }
+
+        canvas.drawBitmap(highlightImage, tile.x * tileSize, tile.y * tileSize, paint);
+
+//        paint.setColor(Color.BLACK);
+//
+//        canvas.drawRect(new Rect(
+//                tile.x * tileSize,
+//                tile.y * tileSize,
+//                tile.x * tileSize + tileSize,
+//                tile.y * tileSize + tileSize
+//        ), paint);
+//
+//        paint.setColor(color);
+//        int borderWidth = 2;
+//        canvas.drawRect(new Rect(
+//                tile.x * tileSize + borderWidth,
+//                tile.y * tileSize + borderWidth,
+//                tile.x * tileSize + tileSize - borderWidth,
+//                tile.y * tileSize + tileSize - borderWidth
+//        ), paint);
+    }
+
+    private Bitmap makeRadGrad() {
+        RadialGradient gradient = new RadialGradient(
+                tileSize / 2, tileSize / 2, tileSize / 2,
+                0xFFFFFFFF, 0xFFFF0000,
+                android.graphics.Shader.TileMode.CLAMP);
+        Paint p = new Paint();
+        p.setDither(true);
+        p.setShader(gradient);
+
+        Bitmap bitmap = Bitmap.createBitmap(tileSize, tileSize, Bitmap.Config.ARGB_8888);
+        Canvas c = new Canvas(bitmap);
+        c.drawCircle(200, 200, 200, p);
+
+        return bitmap;
     }
 
     private Tile from;
@@ -250,20 +308,22 @@ public class ChessBoardView extends SurfaceView implements View, android.view.Vi
     @Override
     public boolean onTouch(android.view.View v, MotionEvent event) {
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
-            Tile selected = getTileAt(event.getX(), event.getY());
+            selectedTile = getTileAt(event.getX(), event.getY());
 
-            if (highlightedTiles == null || !highlightedTiles.contains(selected)) { // First touch (selecting the piece to move)
+            if (selectedTile.equals(from)) {
+                resetHighlights();
+                from = null;
+            } else if (highlightedTiles == null || !highlightedTiles.contains(selectedTile)) { // First touch (selecting the piece to move)
                 from = getTileAt(event.getX(), event.getY());
                 listener.tileSelected(from);
             } else { // Second touch (selecting the destination)
-                to = getTileAt(event.getX(), event.getY());
-                // Reset the highlights
-                selectedTile = null;
-                highlightedTiles.clear();
+                to = selectedTile;
+                resetHighlights();
                 // Send the move to the controller
+                System.out.println("sending move");
                 listener.moveSelected(new Move(from, to));
+                from = null;
             }
-
             // Return true because the touch has been handled
             return true;
         }
@@ -273,38 +333,56 @@ public class ChessBoardView extends SurfaceView implements View, android.view.Vi
 
     @Override
     public Piece.Type getPawnPromotion() {
-        final String[] choices = new String[]{
-                "Queen",
-                "Knight",
-                "Rook",
-                "Bishop"
-        };
-        final String[] choice = new String[1];
+//        final String[] choices = new String[]{
+//                "Queen",
+//                "Knight",
+//                "Rook",
+//                "Bishop"
+//        };
+//        final Integer[] choice = new Integer[1];
+//        choice[0] = 0;
+//
+//        Thread t = new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//                new AlertDialog.Builder(getContext())
+//                        .setCancelable(false)
+//                        .setTitle(R.string.pawn_promotion)
+//                        .setItems(choices, new DialogInterface.OnClickListener() {
+//                            @Override
+//                            public void onClick(DialogInterface dialog, int which) {
+//                                choice[0] = which;
+//                                dialog.dismiss();
+//                            }
+//                        })
+//                        .show();
+//                // wait?
+//            }
+//        });
+//        t.start();
+//
+//        try {
+//            System.out.println("WAITING");
+//            t.join();
+//            System.out.println("COMPLETED");
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
+//
+//        switch (choices[choice[0]]) {
+//            case "Queen":
+//                return Piece.Type.QUEEN;
+//            case "Knight":
+//                return Piece.Type.KNIGHT;
+//            case "Rook":
+//                return Piece.Type.ROOK;
+//            case "Bishop":
+//                return Piece.Type.BISHOP;
+//            default:
+//                return null;
+//        }
 
-        new AlertDialog.Builder(getContext())
-                .setCancelable(false)
-                .setTitle(R.string.pawn_promotion)
-                .setItems(choices, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        choice[0] = choices[which];
-                    }
-                })
-                .create()
-                .show();
-
-        switch (choice[0]) {
-            case "Queen":
-                return Piece.Type.QUEEN;
-            case "Knight":
-                return Piece.Type.KNIGHT;
-            case "Rook":
-                return Piece.Type.ROOK;
-            case "Bishop":
-                return Piece.Type.BISHOP;
-            default:
-                return null;
-        }
+        return Piece.Type.QUEEN;
     }
 
     @Override
@@ -331,4 +409,8 @@ public class ChessBoardView extends SurfaceView implements View, android.view.Vi
         }
     }
 
+    private enum HighlightColor {
+        YELLOW,
+        BLUE
+    }
 }
