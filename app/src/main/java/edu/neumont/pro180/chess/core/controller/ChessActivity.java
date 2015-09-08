@@ -147,8 +147,6 @@ public class ChessActivity extends Activity implements SpeechRequestListener {
     }
 
     private int getColumn(String s) {
-        //Need to fix foxtrot!!!
-        Log.d("spoken_text", s);
         switch (s.toUpperCase()) {
             case "ALPHA":
             case "ALFA":
@@ -180,7 +178,6 @@ public class ChessActivity extends Activity implements SpeechRequestListener {
     }
 
     private int getRow(String s) {
-        Log.d("spoken_text", s);
         switch(s.toUpperCase()) {
             case "ONE":
             case "WON":
