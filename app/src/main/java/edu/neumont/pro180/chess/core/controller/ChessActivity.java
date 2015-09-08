@@ -7,6 +7,7 @@ import android.view.Display;
 import android.view.ViewGroup;
 
 import edu.neumont.pro180.chess.R;
+import edu.neumont.pro180.chess.core.model.Color;
 import edu.neumont.pro180.chess.core.view.ChessBoardView;
 import edu.neumont.pro180.chess.core.view.PlayerView;
 
@@ -35,11 +36,13 @@ public class ChessActivity extends Activity {
         PlayerView light = (PlayerView) findViewById(R.id.light_player_view);
         light.getLayoutParams().width = size.x;
         light.getLayoutParams().height = playerViewHeight;
+        light.setColor(Color.LIGHT);
 
         PlayerView dark = (PlayerView) findViewById(R.id.dark_player_view);
         dark.getLayoutParams().width = size.x;
         dark.getLayoutParams().height = playerViewHeight;
         dark.rotate();
+        dark.setColor(Color.DARK);
 
         // Attach the player views to the board
         boardView.setLightPlayerView(light);

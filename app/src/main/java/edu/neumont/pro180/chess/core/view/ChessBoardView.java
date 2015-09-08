@@ -199,9 +199,12 @@ public class ChessBoardView extends SurfaceView implements View, android.view.Vi
         darkPlayerView.resetText();
         if (currentTurnColor.equals(edu.neumont.pro180.chess.core.model.Color.LIGHT)) {
             lightPlayerView.notifyTurn();
+
         } else {
             darkPlayerView.notifyTurn();
+
         }
+        this.invalidate();
     }
 
     /**
@@ -220,6 +223,7 @@ public class ChessBoardView extends SurfaceView implements View, android.view.Vi
         // TODO only show to the side that is in check?
         lightPlayerView.notifyCheck();
         darkPlayerView.notifyCheck();
+        this.invalidate();
     }
 
     @Override
@@ -316,7 +320,6 @@ public class ChessBoardView extends SurfaceView implements View, android.view.Vi
                 listener.moveSelected(new Move(from, to));
                 from = null;
             }
-
             // Return true because the touch has been handled
             return true;
         }
