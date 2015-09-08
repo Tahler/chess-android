@@ -140,56 +140,13 @@ public class ChessBoardView extends SurfaceView implements View, android.view.Vi
                 if (pieces != null) {
                     Piece piece = pieces[j][i];
                     if (piece != null) {
-                        // TODO store these bitmaps from the start
-
-                        // This is immutable, and not scaled to the size of the tile
-                        Bitmap unscaled = getPieceBitMap(piece);
-
-                        // Create a scaled instance of the above
-                        Bitmap scaled = Bitmap.createScaledBitmap(unscaled, tileSize, tileSize, false);
-                        canvas.drawBitmap(scaled, i * tileSize, j * tileSize, paint);
+                        canvas.drawBitmap(
+                                PieceImagesFactory.getPieceBitMap(getResources(), tileSize, piece),
+                                i * tileSize, j * tileSize, paint);
                     }
                 }
             }
         }
-    }
-
-    /**
-     * @return An immutable Bitmap representing the piece
-     */
-    private Bitmap getPieceBitMap(Piece piece) {
-        if (piece.getColor().equals(edu.neumont.pro180.chess.core.model.Color.LIGHT)) {
-            switch (piece.getType()) {
-                case PAWN:
-                    return BitmapFactory.decodeResource(getResources(), R.drawable.pl);
-                case ROOK:
-                    return BitmapFactory.decodeResource(getResources(), R.drawable.rl);
-                case KNIGHT:
-                    return BitmapFactory.decodeResource(getResources(), R.drawable.nl);
-                case BISHOP:
-                    return BitmapFactory.decodeResource(getResources(), R.drawable.bl);
-                case QUEEN:
-                    return BitmapFactory.decodeResource(getResources(), R.drawable.ql);
-                case KING:
-                    return BitmapFactory.decodeResource(getResources(), R.drawable.kl);
-            }
-        } else {
-            switch (piece.getType()) {
-                case PAWN:
-                    return BitmapFactory.decodeResource(getResources(), R.drawable.pd);
-                case ROOK:
-                    return BitmapFactory.decodeResource(getResources(), R.drawable.rd);
-                case KNIGHT:
-                    return BitmapFactory.decodeResource(getResources(), R.drawable.nd);
-                case BISHOP:
-                    return BitmapFactory.decodeResource(getResources(), R.drawable.bd);
-                case QUEEN:
-                    return BitmapFactory.decodeResource(getResources(), R.drawable.qd);
-                case KING:
-                    return BitmapFactory.decodeResource(getResources(), R.drawable.kd);
-            }
-        }
-        return null;
     }
 
     /**

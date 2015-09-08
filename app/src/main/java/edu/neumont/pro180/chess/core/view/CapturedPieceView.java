@@ -62,15 +62,12 @@ public class CapturedPieceView extends SurfaceView {
         int y;
         int x;
         for (Piece p : capturedPieces) {
-            Bitmap unscaled = getPieceBitMap(p);
-
-            Bitmap scaled = Bitmap.createScaledBitmap(unscaled, displaySize, displaySize, false);
+            Bitmap pieceBitMap = PieceImagesFactory.getPieceBitMap(getResources(), displaySize, p);
             if (p.getType().equals(Piece.Type.PAWN)) {
                 y = (!isFlipped) ? 0 : displaySize;
                 x = xPos[0];
                 xPos[0] += displaySize;
-            }
-            else {
+            } else {
                 y = (!isFlipped) ? displaySize : 0;
                 switch (p.getType()) {
                     case ROOK:
@@ -96,7 +93,7 @@ public class CapturedPieceView extends SurfaceView {
                         x = -1;
                 }
             }
-            drawImage(canvas, scaled, xOffset + x, yOffset + y, rotation);
+            drawImage(canvas, pieceBitMap, xOffset + x, yOffset + y, rotation);
         }
     }
 

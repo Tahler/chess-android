@@ -63,12 +63,14 @@ public abstract class AbstractBoard implements Serializable{
 
     public void executeMove(Move move) {
         Piece mover = getPieceAt(move.getStart());
-        move.setMover(mover); // I don't like this. but sets the mover for the move (helpful with the move's toString())
-        if (mover.getType().equals(Piece.Type.KING)) {
-            if (mover.getColor().equals(Color.LIGHT)) {
-                lightKingLocation = move.getEnd();
-            } else {
-                darkKingLocation = move.getEnd();
+        if (mover != null) {
+            move.setMover(mover); // I don't like this. but sets the mover for the move (helpful with the move's toString())
+            if (mover.getType().equals(Piece.Type.KING)) {
+                if (mover.getColor().equals(Color.LIGHT)) {
+                    lightKingLocation = move.getEnd();
+                } else {
+                    darkKingLocation = move.getEnd();
+                }
             }
         }
 
