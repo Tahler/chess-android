@@ -34,7 +34,7 @@ public class Controller implements View.Listener {
         this.view.setListener(this);
         this.view.displayBoard(board);
     }
-    
+
     @Override
     public void tileSelected(Tile tile) {
         if (tile != null) {

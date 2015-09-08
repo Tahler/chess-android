@@ -6,7 +6,6 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.RadialGradient;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -72,17 +71,6 @@ public class ChessBoardView extends SurfaceView implements View, android.view.Vi
             }
         });
         setOnTouchListener(this);
-
-//        inflate(context, R.layout.player_view, null);
-//
-        // Set voice control button action
-//        findViewById(R.id.voice_control_button)
-//                .setOnClickListener(new OnClickListener() {
-//                    @Override
-//                    public void onClick(android.view.View v) {
-//                         TODO: all voice control actions
-//                    }
-//                });
     }
 
     @Override
@@ -199,10 +187,8 @@ public class ChessBoardView extends SurfaceView implements View, android.view.Vi
         darkPlayerView.resetText();
         if (currentTurnColor.equals(edu.neumont.pro180.chess.core.model.Color.LIGHT)) {
             lightPlayerView.notifyTurn();
-
         } else {
             darkPlayerView.notifyTurn();
-
         }
         this.invalidate();
     }
@@ -267,40 +253,6 @@ public class ChessBoardView extends SurfaceView implements View, android.view.Vi
         }
 
         canvas.drawBitmap(highlightImage, tile.x * tileSize, tile.y * tileSize, paint);
-
-//        paint.setColor(Color.BLACK);
-//
-//        canvas.drawRect(new Rect(
-//                tile.x * tileSize,
-//                tile.y * tileSize,
-//                tile.x * tileSize + tileSize,
-//                tile.y * tileSize + tileSize
-//        ), paint);
-//
-//        paint.setColor(color);
-//        int borderWidth = 2;
-//        canvas.drawRect(new Rect(
-//                tile.x * tileSize + borderWidth,
-//                tile.y * tileSize + borderWidth,
-//                tile.x * tileSize + tileSize - borderWidth,
-//                tile.y * tileSize + tileSize - borderWidth
-//        ), paint);
-    }
-
-    private Bitmap makeRadGrad() {
-        RadialGradient gradient = new RadialGradient(
-                tileSize / 2, tileSize / 2, tileSize / 2,
-                0xFFFFFFFF, 0xFFFF0000,
-                android.graphics.Shader.TileMode.CLAMP);
-        Paint p = new Paint();
-        p.setDither(true);
-        p.setShader(gradient);
-
-        Bitmap bitmap = Bitmap.createBitmap(tileSize, tileSize, Bitmap.Config.ARGB_8888);
-        Canvas c = new Canvas(bitmap);
-        c.drawCircle(200, 200, 200, p);
-
-        return bitmap;
     }
 
     private Tile from;

@@ -3,12 +3,15 @@ package edu.neumont.pro180.chess.core.view;
 import android.content.Context;
 import android.graphics.PixelFormat;
 import android.util.AttributeSet;
+import android.view.View;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.List;
 
 import edu.neumont.pro180.chess.R;
+import edu.neumont.pro180.chess.core.controller.SpeechRequestListener;
 import edu.neumont.pro180.chess.core.model.Color;
 import edu.neumont.pro180.chess.core.model.Piece;
 
@@ -17,9 +20,12 @@ import edu.neumont.pro180.chess.core.model.Piece;
  * It also holds your player's captured pieces and has the voice control button inside of it
  */
 public class PlayerView extends LinearLayout {
+    private SpeechRequestListener speechRequestListener;
+
     private TextView centerNotification;
     private TextView rightNotification;
     private CapturedPieceView capturedPieceView;
+    private ImageButton voiceControlButton;
 
     private Color color;
 
@@ -31,10 +37,17 @@ public class PlayerView extends LinearLayout {
         rightNotification = (TextView) findViewById(R.id.right_notification);
         capturedPieceView = (CapturedPieceView) findViewById(R.id.captured_piece_view);
 
-
         capturedPieceView = (CapturedPieceView) findViewById(R.id.captured_piece_view);
         capturedPieceView.setZOrderOnTop(true);
         capturedPieceView.getHolder().setFormat(PixelFormat.TRANSPARENT);
+
+        voiceControlButton = (ImageButton) findViewById(R.id.voice_control_button);
+        voiceControlButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                speechRequestListener.speechRequested();
+            }
+        });
     }
 
     public void rotate() {
@@ -74,5 +87,9 @@ public class PlayerView extends LinearLayout {
 
     public void setColor(Color color) {
         this.color = color;
+    }
+
+    public void setListener(SpeechRequestListener speechRequestListener) {
+        this.speechRequestListener = speechRequestListener;
     }
 }
