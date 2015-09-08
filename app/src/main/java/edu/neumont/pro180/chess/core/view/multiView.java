@@ -82,14 +82,16 @@ public class multiView implements View{
 	
 	@Override
 	public void displayBoard(Board pieces) {
-		if(pieces.getCurrentTurnColor().equals(Color.LIGHT)){
-			current = 0;
-		}
-		else{
-			current = 1;
-		}
-		for(View v : views){
-			v.displayBoard(pieces);
+		if(pieces!=null){
+			if(pieces.getCurrentTurnColor().equals(Color.LIGHT)){
+				current = 0;
+			}
+			else{
+				current = 1;
+			}
+			for(View v : views){
+				v.displayBoard(pieces);
+			}
 		}
 	}
 
