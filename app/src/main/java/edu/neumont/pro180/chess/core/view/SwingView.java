@@ -321,10 +321,20 @@ public class SwingView extends JFrame implements View{
 	public void notifyGameOver(edu.neumont.pro180.chess.core.model.Color result) {
 		JOptionPane.showMessageDialog(this, "Game Over");
 	}
+	@Override
+	public void notifySpeechError() {
+		JOptionPane.showMessageDialog(this, "Speech Error");
+	}
+
+	@Override
+	public void notifyInvalidMove(Move move) {
+		JOptionPane.showMessageDialog(this, "Bad Move");
+	}
 	
 
     public static void main(String[] args){
     	new Controller(new SwingView());
     }
+
 
 }
