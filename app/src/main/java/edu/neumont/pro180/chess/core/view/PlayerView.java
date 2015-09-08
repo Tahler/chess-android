@@ -45,7 +45,7 @@ public class PlayerView extends LinearLayout {
         voiceControlButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                speechRequestListener.speechRequested();
+                if (speechRequestListener != null) speechRequestListener.speechRequested();
             }
         });
     }
