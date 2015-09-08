@@ -1,8 +1,6 @@
 package edu.neumont.pro180.chess.core.model;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
 import edu.neumont.pro180.chess.core.model.Piece.Type;
 
