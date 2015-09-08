@@ -115,17 +115,25 @@ public class ChessActivity extends Activity implements SpeechRequestListener {
             y2 = getColumn(words[3]);
             x2 = getRow(words[4]);
         }
+        
         if (x1 == -1 || y1 == -1 || y2 == -1 || x2 == -1) return null;
+
+
         return new Move(y1, x1, y2, x2);
     }
 
     private int getColumn(String s) {
         switch (s.toUpperCase()) {
             case "ALPHA":
+            case "ALFA":
             case "A":
+            case "8":
+            case "ATE":
+            case "EIGHT":
                 return 0;
             case "BRAVO":
             case "B":
+            case "V":
                 return 1;
             case "CHARLIE":
             case "C":
@@ -151,7 +159,6 @@ public class ChessActivity extends Activity implements SpeechRequestListener {
     }
 
     private int getRow(String s) {
-        if (s.length() == 2) s = "" + s.charAt(0);
         switch(s.toUpperCase()) {
             case "ONE":
             case "WON":
@@ -183,6 +190,10 @@ public class ChessActivity extends Activity implements SpeechRequestListener {
             case "8":
                 return 0;
             default:
+                //Check again with the first char just in case
+                if (s.length() == 2) {
+                    return (getRow("" + s.charAt(0)));
+                }
                 return -1;
         }
     }
