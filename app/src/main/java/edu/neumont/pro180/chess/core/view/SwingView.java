@@ -276,8 +276,12 @@ public class SwingView extends JFrame implements View{
     }
 
     @Override
-    public void notifyCheck() {
-        JOptionPane.showMessageDialog(this, "Check");
+    public void notifyLightIsInCheck() {
+        JOptionPane.showMessageDialog(this, "Light is in Check");
+    }
+    @Override
+    public void notifyDarkIsInCheck() {
+        JOptionPane.showMessageDialog(this, "Dark is in Check");
     }
     @Override
     public Piece.Type getPawnPromotion() {
@@ -320,7 +324,6 @@ public class SwingView extends JFrame implements View{
 	
 
     public static void main(String[] args){
-//    	new Controller(new multiView(new SwingView(), new SwingView()));
     	new Controller(new SwingView());
     }
 
