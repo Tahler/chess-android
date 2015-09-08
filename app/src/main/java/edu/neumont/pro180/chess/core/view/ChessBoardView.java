@@ -6,7 +6,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Rect;
+import android.graphics.RadialGradient;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -32,6 +32,9 @@ public class ChessBoardView extends SurfaceView implements View, android.view.Vi
     private SurfaceHolder holder;
     private Paint paint;
 
+    private Bitmap yellowHighlightBitmap;
+    private Bitmap blueHighlightBitmap;
+
     // The two PlayerViews above and below the board.
     private PlayerView lightPlayerView;
     private PlayerView darkPlayerView;
@@ -52,6 +55,13 @@ public class ChessBoardView extends SurfaceView implements View, android.view.Vi
                 Log.d("TILE_SIZE", String.valueOf(tileSize));
 
                 paint = new Paint();
+
+                Bitmap unscaledYellow = BitmapFactory.decodeResource(getResources(), R.drawable.yellow_tile);
+                yellowHighlightBitmap = Bitmap.createScaledBitmap(unscaledYellow, tileSize, tileSize, false);
+
+                Bitmap unscaledBlue = BitmapFactory.decodeResource(getResources(), R.drawable.blue_tile);
+                blueHighlightBitmap = Bitmap.createScaledBitmap(unscaledBlue, tileSize, tileSize, false);
+
                 draw();
             }
 
@@ -81,7 +91,6 @@ public class ChessBoardView extends SurfaceView implements View, android.view.Vi
             System.out.println("Canvas was null");
             return;
         }
-        Log.d("DRAW", "Redrawing the screen");
         canvas.drawColor(Color.BLACK);
 
         drawTiles(canvas);
@@ -104,10 +113,10 @@ public class ChessBoardView extends SurfaceView implements View, android.view.Vi
     }
 
     private void drawHighlights(Canvas canvas) {
-        if (selectedTile != null) highlightTile(selectedTile, Color.BLUE, canvas);
+        if (selectedTile != null) highlightTile(selectedTile, HighlightColor.BLUE, canvas);
         if (highlightedTiles != null) {
             for (Tile end : highlightedTiles) {
-                highlightTile(end, Color.YELLOW, canvas);
+                highlightTile(end, HighlightColor.YELLOW, canvas);
             }
         }
     }
@@ -237,23 +246,53 @@ public class ChessBoardView extends SurfaceView implements View, android.view.Vi
         draw();
     }
 
-    public void highlightTile(Tile tile, int color, Canvas canvas) {
-        paint.setColor(Color.BLACK);
-        canvas.drawRect(new Rect(
-                tile.x * tileSize,
-                tile.y * tileSize,
-                tile.x * tileSize + tileSize,
-                tile.y * tileSize + tileSize
-        ), paint);
+    public void highlightTile(Tile tile, HighlightColor color, Canvas canvas) {
+        Bitmap highlightImage = null;
 
-        paint.setColor(color);
-        int borderWidth = 2;
-        canvas.drawRect(new Rect(
-                tile.x * tileSize + borderWidth,
-                tile.y * tileSize + borderWidth,
-                tile.x * tileSize + tileSize - borderWidth,
-                tile.y * tileSize + tileSize - borderWidth
-        ), paint);
+        switch (color) {
+            case YELLOW:
+                highlightImage = yellowHighlightBitmap;
+                break;
+            case BLUE:
+                highlightImage = blueHighlightBitmap;
+                break;
+        }
+
+        canvas.drawBitmap(highlightImage, tile.x * tileSize, tile.y * tileSize, paint);
+
+//        paint.setColor(Color.BLACK);
+//
+//        canvas.drawRect(new Rect(
+//                tile.x * tileSize,
+//                tile.y * tileSize,
+//                tile.x * tileSize + tileSize,
+//                tile.y * tileSize + tileSize
+//        ), paint);
+//
+//        paint.setColor(color);
+//        int borderWidth = 2;
+//        canvas.drawRect(new Rect(
+//                tile.x * tileSize + borderWidth,
+//                tile.y * tileSize + borderWidth,
+//                tile.x * tileSize + tileSize - borderWidth,
+//                tile.y * tileSize + tileSize - borderWidth
+//        ), paint);
+    }
+
+    private Bitmap makeRadGrad() {
+        RadialGradient gradient = new RadialGradient(
+                tileSize / 2, tileSize / 2, tileSize / 2,
+                0xFFFFFFFF, 0xFFFF0000,
+                android.graphics.Shader.TileMode.CLAMP);
+        Paint p = new Paint();
+        p.setDither(true);
+        p.setShader(gradient);
+
+        Bitmap bitmap = Bitmap.createBitmap(tileSize, tileSize, Bitmap.Config.ARGB_8888);
+        Canvas c = new Canvas(bitmap);
+        c.drawCircle(200, 200, 200, p);
+
+        return bitmap;
     }
 
     private Tile from;
@@ -363,4 +402,8 @@ public class ChessBoardView extends SurfaceView implements View, android.view.Vi
         }
     }
 
+    private enum HighlightColor {
+        YELLOW,
+        BLUE
+    }
 }
