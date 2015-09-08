@@ -70,7 +70,8 @@ public class Controller implements View.Listener {
         // Send the new Piece[][] to the view
         view.displayBoard(board);
 
-        if (validator.isInCheck()) view.notifyCheck();
+        if (validator.lightIsInCheck()) view.notifyLightIsInCheck();
+        if (validator.darkIsInCheck()) view.notifyDarkIsInCheck();
 
         // If this move has now ended the game, end the game.
         if (validator.isOver()) {

@@ -219,9 +219,13 @@ public class ChessBoardView extends SurfaceView implements View, android.view.Vi
     }
 
     @Override
-    public void notifyCheck() {
-        // TODO only show to the side that is in check?
+    public void notifyLightIsInCheck() {
         lightPlayerView.notifyCheck();
+        this.invalidate();
+    }
+
+    @Override
+    public void notifyDarkIsInCheck() {
         darkPlayerView.notifyCheck();
         this.invalidate();
     }

@@ -21,8 +21,8 @@ public class MoveValidator {
 
     /**
      * Succeeds if valid, otherwise throws an exception
-     * @param move
-     * @throws IllegalMoveException
+     * @param move The move to be validated
+     * @throws IllegalMoveException Thrown if the move is invalid
      */
     public void validate(Move move) throws IllegalMoveException {
         if (!getAllValidMoves(move.getStart()).contains(move)) {
@@ -335,40 +335,40 @@ public class MoveValidator {
         // Castling moves
         Piece rook;
         if (kingColor.equals(Color.LIGHT)) {
-            if (p.x == 4 && p.y == 7 && !isAttacked(4, 7, kingColor)) {
+            if (p.x == 4 && p.y == 7 && !isAttacked(4, 7)) {
                 // Short
                 rook = board.getPieceAt(7, 7);
                 if (rook != null && !rook.hasMoved() &&
-                        board.getPieceAt(5, 7) == null && !isAttacked(5, 7, kingColor) &&
-                        board.getPieceAt(6, 7) == null && !isAttacked(6, 7, kingColor) &&
+                        board.getPieceAt(5, 7) == null && !isAttacked(5, 7) &&
+                        board.getPieceAt(6, 7) == null && !isAttacked(6, 7) &&
                         rook.getType().equals(Piece.Type.ROOK) && rook.getColor().equals(Color.LIGHT)) {
                     moves.add(new Move(4, 7, 6, 7));
                 }
                 // Long
                 rook = board.getPieceAt(0, 7);
                 if (rook != null && !rook.hasMoved() &&
-                        board.getPieceAt(3, 7) == null && !isAttacked(3, 7, kingColor) &&
-                        board.getPieceAt(2, 7) == null && !isAttacked(2, 7, kingColor) &&
+                        board.getPieceAt(3, 7) == null && !isAttacked(3, 7) &&
+                        board.getPieceAt(2, 7) == null && !isAttacked(2, 7) &&
                         board.getPieceAt(1, 7) == null &&
                         rook.getType().equals(Piece.Type.ROOK) && rook.getColor().equals(Color.LIGHT)) {
                     moves.add(new Move(4, 7, 2, 7));
                 }
             }
         } else {
-            if (p.x == 4 && p.y == 0 && !isAttacked(4, 0, kingColor)) { // Can't castle out of check
+            if (p.x == 4 && p.y == 0 && !isAttacked(4, 0)) { // Can't castle out of check
                 // Short
                 rook = board.getPieceAt(7, 0);
                 if (rook != null && !rook.hasMoved() &&
-                        board.getPieceAt(5, 0) == null && !isAttacked(5, 0, kingColor) && // Can't castle through check
-                        board.getPieceAt(6, 0) == null && !isAttacked(6, 0, kingColor) &&
+                        board.getPieceAt(5, 0) == null && !isAttacked(5, 0) && // Can't castle through check
+                        board.getPieceAt(6, 0) == null && !isAttacked(6, 0) &&
                         rook.getType().equals(Piece.Type.ROOK) && rook.getColor().equals(Color.DARK)) {
                     moves.add(new Move(4, 0, 6, 0));
                 }
                 // Long
                 rook = board.getPieceAt(0, 0);
                 if (rook != null && !rook.hasMoved() &&
-                        board.getPieceAt(3, 0) == null && !isAttacked(3, 0, kingColor) && // Can't castle through check
-                        board.getPieceAt(2, 0) == null && !isAttacked(2, 0, kingColor) &&
+                        board.getPieceAt(3, 0) == null && !isAttacked(3, 0) && // Can't castle through check
+                        board.getPieceAt(2, 0) == null && !isAttacked(2, 0) &&
                         board.getPieceAt(1, 0) == null &&
                         rook.getType().equals(Piece.Type.ROOK) && rook.getColor().equals(Color.DARK)) {
                     moves.add(new Move(4, 0, 2, 0));
@@ -404,9 +404,8 @@ public class MoveValidator {
         this.board = new BoardBuffer(realBoard); // Switch to an 'imaginary' board
 
         // Make the move on the imaginary board, and determine if the move would end with the tile attacked
-        Color victimColor = board.getPieceAt(potentialMove.getStart()).getColor();
         board.executeMove(potentialMove);
-        boolean isAttacked = isAttacked(potentiallyAttackedLocation, victimColor);
+        boolean isAttacked = isAttacked(potentiallyAttackedLocation);
 
         this.board = realBoard; // Switch back
         return isAttacked; // Return the result
@@ -418,7 +417,10 @@ public class MoveValidator {
      * 2. At each square, pretend the king is one of the other pieces and check if it attacks an enemy piece. For example, we can branch out along the diagonals to see if we come across an enemy bishop. If we do, it's not legal to move to that square.
      * 3. Collect the moves to the squares where the above check does not come across any enemy pieces.
      */
-    public Boolean isAttacked(AbstractBoard board, Tile potentiallyAttackedLocation, Color victimColor) {
+    public Boolean isAttacked(AbstractBoard board, Tile potentiallyAttackedLocation) {
+        Piece attacked = board.getPieceAt(potentiallyAttackedLocation);
+        if (attacked == null) return false;
+        Color victimColor = attacked.getColor();
         Piece potentialAttacker;
         // If any possible next move on the board
         for (int i = 0; i < 8; i++) {
@@ -437,19 +439,26 @@ public class MoveValidator {
         }
         return false;
     }
-    public Boolean isAttacked(AbstractBoard board, Integer x, Integer y, Color victimColor) {
-        return isAttacked(board, new Tile(x, y), victimColor);
+    public Boolean isAttacked(AbstractBoard board, Integer x, Integer y) {
+        return isAttacked(board, new Tile(x, y));
     }
-    public Boolean isAttacked(Tile location, Color color) {
-        return this.isAttacked(board, location, color);
+    public Boolean isAttacked(Tile location) {
+        return this.isAttacked(board, location);
     }
-    public Boolean isAttacked(Integer x, Integer y, Color color) {
-        return isAttacked(new Tile(x, y), color);
+    public Boolean isAttacked(Integer x, Integer y) {
+        return isAttacked(new Tile(x, y));
+    }
+
+    public Boolean lightIsInCheck() {
+        return isAttacked(board.lightKingLocation);
+    }
+
+    public Boolean darkIsInCheck() {
+        return isAttacked(board.darkKingLocation);
     }
 
     public Boolean isInCheck() {
-        return isAttacked(board.lightKingLocation, Color.LIGHT) ||
-               isAttacked(board.darkKingLocation, Color.DARK);
+        return lightIsInCheck() || darkIsInCheck();
     }
 
     /**
@@ -469,8 +478,8 @@ public class MoveValidator {
     public Color getResult() {
         if (!isOver()) return null;
 
-        if (isAttacked(board.lightKingLocation, Color.LIGHT)) return Color.DARK;
-        if (isAttacked(board.darkKingLocation, Color.DARK)) return Color.LIGHT;
+        if (isAttacked(board.darkKingLocation)) return Color.LIGHT;
+        if (isAttacked(board.lightKingLocation)) return Color.DARK;
 
         return null; // Stalemate at this point
     }
