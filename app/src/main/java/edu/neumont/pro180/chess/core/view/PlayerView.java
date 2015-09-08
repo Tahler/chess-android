@@ -103,4 +103,8 @@ public class PlayerView extends LinearLayout {
     public void setListener(SpeechRequestListener speechRequestListener) {
         this.speechRequestListener = speechRequestListener;
     }
+
+    public void notifyInvalidMove() {
+        if (isTurn) centerNotification.setText("That move is invalid, try again.");
+    }
 }

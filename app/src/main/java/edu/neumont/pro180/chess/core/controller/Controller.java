@@ -58,6 +58,7 @@ public class Controller implements View.Listener {
         if (validator.getAllValidMoves(move.getStart()).contains(move)) {
             board.makeMove(move);
         } else {
+            view.notifyInvalidMove();
             System.err.println("Something very weird happened - the move was invalid");
             return; // retry until a valid move is made
         }

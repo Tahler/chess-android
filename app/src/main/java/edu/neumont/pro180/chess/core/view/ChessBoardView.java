@@ -373,6 +373,12 @@ public class ChessBoardView extends SurfaceView implements View, android.view.Vi
         darkPlayerView.notifySpeechError();
     }
 
+    @Override
+    public void notifyInvalidMove() {
+        lightPlayerView.notifyInvalidMove();
+        darkPlayerView.notifyInvalidMove();
+    }
+
     public void setLightPlayerView(PlayerView lightPlayerView) {
         this.lightPlayerView = lightPlayerView;
     }
