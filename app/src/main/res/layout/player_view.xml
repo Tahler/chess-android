@@ -35,7 +35,7 @@
             android:id="@+id/right_notification"
             android:layout_weight="0.33"
             android:gravity="center"
-            android:text="#FFF"/>
+            android:textColor="#FFF"/>
 
     </LinearLayout>
 

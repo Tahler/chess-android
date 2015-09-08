@@ -65,7 +65,7 @@ public class PlayerView extends LinearLayout {
     public void notifyGameOver(Color result) {
         if (result == null)centerNotification.setText("Stale mate!");
         else if (result.equals(color)) centerNotification.setText("You win!");
-        else centerNotification.setText("You have been defeated!");
+        else centerNotification.setText("You lose!");
         rightNotification.setText("");
         System.out.println("Printing Game over");
     }
