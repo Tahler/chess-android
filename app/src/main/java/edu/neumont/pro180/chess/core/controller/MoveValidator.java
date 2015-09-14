@@ -82,8 +82,6 @@ public class MoveValidator {
             case KING:
                 moves = getKingMoves(p);
                 break;
-            default:
-                return null; // No piece on this tile: no valid moves
         }
 
         // Filter the moves
@@ -130,7 +128,32 @@ public class MoveValidator {
         // Filter the attacks
         for (int i = 0; i < attacks.size(); i++) {
             Move attack = attacks.get(i);
+            Piece attacker = board.getPieceAt(attack.getStart());
             Piece attacked = board.getPieceAt(attack.getEnd());
+
+            // En passant checking
+            Move lastMove = board.getLastMove();
+            Tile enemyPawnLocation = lastMove.getEnd();
+            if (attacker.getColor().equals(Color.LIGHT)) {
+                // allowed through if dark just moved a pawn two spaces forward
+                if (lastMove.getMover().getType().equals(Piece.Type.PAWN)
+                        && lastMove.getStart().y == 1 && enemyPawnLocation.y == 3) {
+                    if ((p.x == enemyPawnLocation.x + 1 || p.x == enemyPawnLocation.x - 1) // left or right
+                            && p.y == enemyPawnLocation.y) {
+                        continue;
+                    }
+                }
+            } else {
+                // allowed through if light just moved a pawn two spaces forward
+                if (lastMove.getMover().getType().equals(Piece.Type.PAWN)
+                        && lastMove.getStart().y == 6 && enemyPawnLocation.y == 4) {
+                    if ((p.x == enemyPawnLocation.x + 1 || p.x == enemyPawnLocation.x - 1) // left or right
+                            && p.y == enemyPawnLocation.y) {
+                        continue;
+                    }
+                }
+            }
+
             if (attacked == null || attacked.getColor().equals(mover.getColor())) { // if no piece would be taken of if the attacked piece is of the same color, remove
                 attacks.remove(i);
                 i--;
@@ -325,7 +348,8 @@ public class MoveValidator {
 
         return moves;
     }
-    private List<Move> getKingCastleMoves(Tile p) {
+    private List<Move>
+    getKingCastleMoves(Tile p) {
         List<Move> moves = new ArrayList<>();
         Piece king = board.getPieceAt(p);
         if (king.hasMoved()) return moves; // If the king has moved, it cannot castle!

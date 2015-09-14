@@ -1,6 +1,8 @@
 package edu.neumont.pro180.chess.core.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 import edu.neumont.pro180.chess.core.model.Piece.Type;
 
@@ -10,6 +12,8 @@ public abstract class AbstractBoard implements Serializable{
 
     public Tile lightKingLocation;
     public Tile darkKingLocation;
+
+    private List<Move> moveHistory = new ArrayList<>();
 
     public AbstractBoard() {
         // Initialize tiles
@@ -100,6 +104,14 @@ public abstract class AbstractBoard implements Serializable{
 
     public Piece[][] getPieces() {
         return pieces;
+    }
+
+    public List<Move> getMoveHistory() {
+        return moveHistory;
+    }
+
+    public Move getLastMove() {
+        return moveHistory.get(moveHistory.size() - 1); // size or size - 1?
     }
 
     /**

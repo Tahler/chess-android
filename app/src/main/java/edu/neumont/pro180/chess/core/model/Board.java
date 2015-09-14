@@ -11,7 +11,6 @@ public class Board extends AbstractBoard {
     private List<Piece> lightCapturedPieces;
     // Pieces captured by dark - the pieces themselves are light
     private List<Piece> darkCapturedPieces;
-    private List<Move> moveHistory = new ArrayList<>();
 
     public Board() {
         super();
@@ -38,7 +37,7 @@ public class Board extends AbstractBoard {
         super.executeMove(move);
         move.getMover().move(); // Set its boolean hasMoved to true
         switchTurn();
-        moveHistory.add(move);
+        getMoveHistory().add(move);
     }
 //    public void undoMove() { // TODO: presents problems with castling
 //        Move lastMove = moveHistory.remove(moveHistory.size() - 1);   // remove from the history
@@ -70,9 +69,5 @@ public class Board extends AbstractBoard {
      */
     public List<Piece> getDarkCapturedPieces() {
         return darkCapturedPieces;
-    }
-
-    public List<Move> getMoveHistory() {
-        return moveHistory;
     }
 }
