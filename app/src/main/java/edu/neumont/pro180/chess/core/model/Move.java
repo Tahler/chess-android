@@ -7,6 +7,7 @@ public class Move implements Serializable{
 	private final Tile start;
     private final Tile end;
     private Piece mover;
+    private Tile captured;
 
     public Move(Integer x1, Integer y1, Integer x2, Integer y2) {
         this(new Tile(x1, y1), new Tile(x2, y2));
@@ -15,6 +16,7 @@ public class Move implements Serializable{
     public Move(Tile start, Tile end) {
         this.start = start;
         this.end = end;
+        this.captured = end; // reassigned in the event of en passant
     }
 
     public Tile getStart() {
@@ -26,6 +28,13 @@ public class Move implements Serializable{
 
     public void setMover(Piece mover) {
         this.mover = mover;
+    }
+
+    public Tile getCaptured() {
+        return captured;
+    }
+    public void setCaptured(Tile captured) {
+        this.captured = captured;
     }
 
     @Override

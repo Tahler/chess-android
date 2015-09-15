@@ -83,6 +83,32 @@ public abstract class AbstractBoard implements Serializable{
         int x2 = move.getEnd().x;
         int y2 = move.getEnd().y;
 
+        // En passant capturing
+        Move lastMove = getLastMove();
+        if (mover.getType().equals(Piece.Type.PAWN)) {
+            if (lastMove != null) {
+                Tile enemyPawnLocation = lastMove.getEnd(); // the destination of the most recent move
+                if (mover.getColor().equals(Color.LIGHT)) {
+                    // allowed through if dark just moved a pawn two spaces forward
+                    if (getPieceAt(enemyPawnLocation).getType().equals(Piece.Type.PAWN)
+                            && lastMove.getStart().y == 1 && enemyPawnLocation.y == 3) {
+                        if (move.getEnd().equals(new Tile(enemyPawnLocation.x, enemyPawnLocation.y - 1))) {
+                            move.setCaptured(enemyPawnLocation);
+                        }
+                    }
+                } else {
+                    // allowed through if light just moved a pawn two spaces forward
+                    if (lastMove.getMover().getType().equals(Piece.Type.PAWN)
+                            && lastMove.getStart().y == 6 && enemyPawnLocation.y == 4) {
+                        if (move.getEnd().equals(new Tile(enemyPawnLocation.x, enemyPawnLocation.y + 1))) {
+                            move.setCaptured(enemyPawnLocation);
+                        }
+                    }
+                }
+            }
+        }
+
+        pieces[move.getCaptured().y][move.getCaptured().x] = null; // Needed for en passant capturing
         pieces[y2][x2] = pieces[y1][x1];
         pieces[y1][x1] = null;
 
@@ -111,7 +137,8 @@ public abstract class AbstractBoard implements Serializable{
     }
 
     public Move getLastMove() {
-        return moveHistory.get(moveHistory.size() - 1); // size or size - 1?
+        if (moveHistory.size() > 0) return moveHistory.get(moveHistory.size() - 1); // size or size - 1?
+        else return null;
     }
 
     /**

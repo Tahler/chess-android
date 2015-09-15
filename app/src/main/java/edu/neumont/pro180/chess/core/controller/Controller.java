@@ -45,7 +45,7 @@ public class Controller implements View.Listener {
             // Send the move destinations to the view
             List<Tile> ends = new ArrayList<>();
             for (Move m : validMovesAtTile) ends.add(m.getEnd());
-            view.highlightTiles(tile, ends);
+            view.highlightMoves(tile, ends);
         }
     }
 

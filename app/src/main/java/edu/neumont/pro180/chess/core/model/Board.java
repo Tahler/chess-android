@@ -29,7 +29,7 @@ public class Board extends AbstractBoard {
      * @param move A pre-validated move
      */
     public void makeMove(Move move) {
-        Piece captured = getPieceAt(move.getEnd());
+        Piece captured = getPieceAt(move.getCaptured());
         if(captured != null) {
             if (captured.getColor().equals(Color.LIGHT)) darkCapturedPieces.add(captured);
             else lightCapturedPieces.add(captured);
@@ -39,15 +39,6 @@ public class Board extends AbstractBoard {
         switchTurn();
         getMoveHistory().add(move);
     }
-//    public void undoMove() { // TODO: presents problems with castling
-//        Move lastMove = moveHistory.remove(moveHistory.size() - 1);   // remove from the history
-//        Move move = new Move(lastMove.getEnd(), lastMove.getStart()); // the opposite of the undone move
-//        executeMove(move);
-//        switchTurn();
-//    }
-//    public Move getLastMove() {
-//        return moveHistory.get(moveHistory.size() - 1);
-//    }
 
     private void switchTurn() {
         if (currentTurnColor.equals(Color.LIGHT)) {

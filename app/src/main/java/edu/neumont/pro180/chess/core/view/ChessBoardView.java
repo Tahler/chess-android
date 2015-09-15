@@ -210,7 +210,7 @@ public class ChessBoardView extends SurfaceView implements View, android.view.Vi
      * @param ends A list of possible destinations
      */
     @Override
-    public void highlightTiles(Tile start, List<Tile> ends) {
+    public void highlightMoves(Tile start, List<Tile> ends) {
         Canvas canvas = holder.lockCanvas();
         highlightedTiles = ends;
         draw(canvas);

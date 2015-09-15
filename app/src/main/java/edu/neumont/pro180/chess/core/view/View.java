@@ -21,7 +21,7 @@ public interface View {
      */
     void notifyGameOver(Color result);
 
-    void highlightTiles(Tile start, List<Tile> ends);
+    void highlightMoves(Tile start, List<Tile> ends);
 
     Piece.Type getPawnPromotion();
 
