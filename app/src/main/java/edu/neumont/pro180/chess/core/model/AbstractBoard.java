@@ -13,6 +13,11 @@ public abstract class AbstractBoard implements Serializable{
     public Tile lightKingLocation;
     public Tile darkKingLocation;
 
+    // Pieces captured by light - the pieces themselves are dark
+    private List<Piece> lightCapturedPieces = new ArrayList<>();
+    // Pieces captured by dark - the pieces themselves are light
+    private List<Piece> darkCapturedPieces = new ArrayList<>();
+
     private List<Move> moveHistory = new ArrayList<>();
 
     public AbstractBoard() {
@@ -108,6 +113,12 @@ public abstract class AbstractBoard implements Serializable{
             }
         }
 
+        Piece captured = getPieceAt(move.getCaptured());
+        if (captured != null) {
+            if (captured.getColor().equals(Color.LIGHT)) darkCapturedPieces.add(captured);
+            else lightCapturedPieces.add(captured);
+        }
+
         pieces[move.getCaptured().y][move.getCaptured().x] = null; // Needed for en passant capturing
         pieces[y2][x2] = pieces[y1][x1];
         pieces[y1][x1] = null;
@@ -130,6 +141,20 @@ public abstract class AbstractBoard implements Serializable{
 
     public Piece[][] getPieces() {
         return pieces;
+    }
+
+    /**
+     * @return The list of pieces captured by LIGHT. The pieces contained will be DARK.
+     */
+    public List<Piece> getLightCapturedPieces() {
+        return lightCapturedPieces;
+    }
+
+    /**
+     * @return The list of pieces captured by DARK. The pieces contained will be LIGHT.
+     */
+    public List<Piece> getDarkCapturedPieces() {
+        return darkCapturedPieces;
     }
 
     public List<Move> getMoveHistory() {
