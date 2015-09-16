@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.util.AttributeSet;
@@ -39,6 +40,8 @@ public class ChessBoardView extends SurfaceView implements View, android.view.Vi
     private PlayerView lightPlayerView;
     private PlayerView darkPlayerView;
 
+    private edu.neumont.pro180.chess.core.model.Color turnColor;
+
     // The width in pixels of each tile
     private static int tileSize;
     private Piece[][] pieces; // cached, set from the controller call
@@ -71,6 +74,7 @@ public class ChessBoardView extends SurfaceView implements View, android.view.Vi
             public void surfaceDestroyed(SurfaceHolder surfaceHolder) {
             }
         });
+        turnColor = edu.neumont.pro180.chess.core.model.Color.LIGHT;
         setOnTouchListener(this);
     }
 
@@ -140,9 +144,22 @@ public class ChessBoardView extends SurfaceView implements View, android.view.Vi
                 if (pieces != null) {
                     Piece piece = pieces[j][i];
                     if (piece != null) {
-                        canvas.drawBitmap(
-                                PieceImagesFactory.getPieceBitMap(getResources(), tileSize, piece),
-                                i * tileSize, j * tileSize, paint);
+                        Bitmap pieceBitmap = PieceImagesFactory.getPieceBitMap(getResources(), tileSize, piece);
+                        // If it is dark's turn, draw the piece upside down
+                        if (turnColor.equals(edu.neumont.pro180.chess.core.model.Color.DARK)) {
+                            Matrix matrix = new Matrix();
+                            matrix.postRotate(180);
+                            canvas.drawBitmap(
+                                    Bitmap.createBitmap(pieceBitmap,
+                                            0, 0,
+                                            pieceBitmap.getWidth(), pieceBitmap.getHeight(),
+                                            matrix, true),
+                                    i * tileSize, j * tileSize, paint);
+                        // Otherwise, draw it normally
+                        } else {
+                            canvas.drawBitmap(pieceBitmap,
+                                    i * tileSize, j * tileSize, paint);
+                        }
                     }
                 }
             }
@@ -165,6 +182,7 @@ public class ChessBoardView extends SurfaceView implements View, android.view.Vi
     }
 
     private void turnChange(edu.neumont.pro180.chess.core.model.Color currentTurnColor) {
+        turnColor = currentTurnColor;
         lightPlayerView.resetText();
         darkPlayerView.resetText();
         if (currentTurnColor.equals(edu.neumont.pro180.chess.core.model.Color.LIGHT)) {
