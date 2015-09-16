@@ -6,4 +6,3 @@ A port of the other chess repository to android
 2. Achievements
 3. Use a different voice control?
 
-change
