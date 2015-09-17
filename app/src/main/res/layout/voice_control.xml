@@ -2,6 +2,14 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#32A">
+    android:background="#fff"
+    android:weightSum="1">
 
+    <ImageButton
+        android:layout_width="196dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/imageButton"
+        android:layout_gravity="center_horizontal"
+        android:src="@drawable/ic_mic_white_36dp"
+        android:layout_weight="0.22" />
 </LinearLayout>
